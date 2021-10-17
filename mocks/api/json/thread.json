@@ -1,0 +1,35 @@
+[
+	{
+		"author": "dhouston",
+		"descendants": 71,
+		"id": 8863,
+		"score": 111,
+		"time": 1175714200,
+		"title": "My YC app: Dropbox - Throw away your USB drive",
+		"type": "story",
+		"url": "http://www.news.example.com/article/20",
+		"comments": [
+			{
+				"by": "norvig",
+				"id": 2921983,
+				"parent": 8863,
+				"text": "Aw shucks, guys ... you make me blush with your compliments.<p>Tell you what, Ill make a deal: I'll keep writing if you keep reading. K?",
+				"time": 1314211127,
+				"type": "comment",
+				"comments": [
+					{
+						"by": "norvig2",
+						"id": 2921984,
+						"parent": 2921983,
+						"text": "One level deeper",
+						"time": 1314212127,
+						"type": "comment",
+						"comments": [
+							"This goes as deep as url parameter ?depth=[N] or a default value if unspecified."
+						]
+					}
+				]
+			}
+		]
+	}
+]
