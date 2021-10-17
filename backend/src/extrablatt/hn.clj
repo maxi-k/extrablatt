@@ -1,10 +1,12 @@
 (ns extrablatt.hn
   (:require
-   [clojure.core.async :as async :refer [<! >! go <!!]]
+   [clojure.core.async :as async :refer [<! >! go <!! timeout alts! go-loop close!]]
    [clojure.core.reducers :as r]
    [clojure.set :refer [rename-keys]]
    [cheshire.core :refer [parse-string]]
-   [clj-http.client :as http])
+   [clj-http.client :as http]
+   [matchbox.core :as m]
+   [matchbox.async :as ma])
   (:import java.time.Instant))
 
 (def hn-base-url
@@ -15,92 +17,126 @@
   "The default depth to fetch for the children of a thread/item."
   2)
 
-(defn- hn-cache-request-time
-  "How long to cache requests for before re-fetching based on endpoint."
-  [endpoint]
-  (let [map {:topstories 10
-             :item 30}
-        default 30]
-    (get map endpoint default)))
-
-(defn- make-hn-endpoint
-  "Format a hacker-news api url with the given key."
-  [endpoint]
-  (str hn-base-url (name endpoint) ".json"))
-
-(defn- fetch-hn-endpoint-nocache
-  "Fetch a hackernews endpoint, throwing any exceptions that occur.
-  Returns a clojure-data-coerced body."
-  [endpoint]
-  (let [result
-        (-> (make-hn-endpoint (name endpoint))
-            (http/get {:accept :json}))]
-    {:status (:status result)
-     :body (parse-string (:body result) true)}))
-
-;; also look at https://clojuredocs.org/clojure.core/delay for possible implementation
-(def ^:private fetch-hn-endpoint-memoized
-  (memoize (fn [endpoint time]
-             ;; (println "fetching item from remote from " endpoint " with time " time)
-             (fetch-hn-endpoint-nocache endpoint))))
-
-(defn fetch-hn-endpoint
-  "Fetch a hackernews endpoint, potentially using the cache to answer the request.
-  Bubbles errors."
-  ([endpoint additional]
-   (fetch-hn-endpoint (str (name endpoint) "/" additional)))
-  ([endpoint]
-   (let [secs (.getEpochSecond (Instant/now))
-         rounded (- secs (mod secs (hn-cache-request-time endpoint)))]
-     (fetch-hn-endpoint-memoized endpoint rounded))))
-
-(defn fetch-top-story-ids
-  "Fetch the hacker-news top story ids."
-  []
-  (:body (fetch-hn-endpoint :topstories)))
-
-(defn- convert-hn-top-item
+(defn convert-hn-item
   "Converts a hackernews api item to our application-internal format for top stories."
   [item]
   (-> item
-      (rename-keys {:by :author})
-      (dissoc :kids)
+      (rename-keys {:by :author, :kids :comments})
       (assoc :previewImage "https://cataas.com/cat")))
 
-(defn fetch-item-by-id
-  "Fetch a hackernews item (comment, story) by id."
+(def fb-root (m/connect hn-base-url))
+
+(def top-stories
+  "The list of current top story ids."
+  (ref []))
+
+(def story-cache
+  "Map from story-id to {:fetched timestamp, :story story}"
+  (ref {}))
+
+(defn is-fresh?
+  "Returns true if the given cache item is still fresh enough"
+  [item]
+  (and item
+       (> 60
+          (- (.getEpochSecond (Instant/now))
+             (.getEpochSecond (:time item))))))
+
+(defn is-fresh-id?
+  "Returns true if the cache-item associated with the given id is fresh."
   [id]
-  (:body (fetch-hn-endpoint :item id)))
+  (is-fresh? (get @story-cache id)))
 
-(defn fetch-items-parallel
-  "Given a list of item ids, fetch their respective threads in parallel
-  using the given fetcher function (default: fetch-item-by-id).
-  Additionaly, apply the given function f in each parallel execution context
-  to the result (defaults to identity).
-  Return a vector of fetched items, not necesseraly in the input order."
-  ([ids] (fetch-items-parallel ids identity))
-  ([ids f] (fetch-items-parallel ids f fetch-item-by-id))
-  ([ids f fetcher]
-   (let [n (count ids)]
-     (if (zero? n)
-       []
-       (let [c (async/chan n)
-             results (transient [])]
-         (doseq [id ids] (go (>! c (f (fetcher id)))))
-         (doseq [id ids] (conj! results (<!! c)))
-         (persistent! results))))))
+(defn is-dirty-id?
+  "Returns true if the cache-item associated with the given id is fresh."
+  [id]
+  (not (is-fresh-id? id)))
 
-(defn fetch-top-items
-  ;; TODO find out if HN top endpoint takes an n parameter
-  "Fetch the top n news items."
-  ([] (fetch-top-items 50))
-  ([n] (fetch-items-parallel
-        (take n (fetch-top-story-ids))
-        convert-hn-top-item )))
+(defn fetch-and-cache-story
+  "Fetch the given story if not in the story cache already or the last fetched timestamp is too old.
+  Put it into the story cache and update the timestamp.
+  Returns a channel where the story will be delivered."
+  ([id] (fetch-and-cache-story id false))
+  ([id force?]
+   (let [current (get @story-cache id)]
+     (if (and (not force?) (is-fresh? current))
+       (async/to-chan [(:data current)])
+       (let [output (async/chan)
+             ch (async/chan)
+             closer (m/listen-to fb-root
+                                 ["item" (str id)]
+                                 :value
+                                 (fn [res]
+                                   (when res (go (>! ch res)))))]
+         (go
+           (let [[key raw-story] (<! ch)
+                 story (convert-hn-item raw-story)]
+             (dosync
+              (alter story-cache assoc (:id story) {:time (Instant/now)
+                                                    :data story}))
+             (close! ch)
+             (closer)
+             (>! output story)))
+         output)))))
 
-(defn- fetch-thread-details-recur
+(def story-prefetch-max-depth 4)
+(def story-detail-backlog (async/chan 1024))
+(def story-detail-fetcher
+  "Fetch story details and put them into the story map."
+  (let [stop-chan (async/chan)]
+    (go-loop []
+      (let [[data ch] (alts! [story-detail-backlog stop-chan])]
+        (when (not= ch stop-chan)
+          (try
+            (let [{:keys [depth items]} data]
+              (when (< depth story-prefetch-max-depth)
+                (doseq [id (filter is-dirty-id? items)]
+                  (go
+                    (let [detail (<! (fetch-and-cache-story id))
+                          com (filter is-dirty-id? (:comments detail))]
+                      (when (seq? com)
+                        (>! story-detail-backlog {:depth (+ depth 1) :items com})))))))
+            (catch Exception e
+              (println "Caught " (.getMessage e) " with data " data)))
+          (recur))))
+    stop-chan))
+
+(def ignore-top-stories
+  "Whether to stop caching top stories even if updates arrive."
+  (atom false))
+
+(def top-story-fetcher
+  "Fetches the top story ids and puts their ids into the top-stories list.
+  Also triggers fetching their details recursively."
+  (m/listen-list
+   fb-root :topstories
+   (fn [stories]
+     (when (not @ignore-top-stories)
+       (dosync
+        (ref-set top-stories stories))
+       (go (>! story-detail-backlog {:depth 0 :items (filter is-dirty-id? stories)}))))))
+
+
+(defn front-page
+  ([] (front-page 50))
+  ([n]
+   (let [ids (take n @top-stories)
+         len (count ids)
+         chs (async/merge (map (fn [id] (fetch-and-cache-story id)) ids))]
+     (filter some?
+             (<!!
+              (go-loop [left len
+                        res []]
+                (if (= 0 left)
+                  res
+                  (recur (- left 1)
+                         (conj res (dissoc (<! chs) :comments))))))))))
+
+
+#_(defn- fetch-thread-details-recur
   [thread depth]
-   (let [converted (convert-hn-top-item thread)]
+   (let [converted (convert-hn-item thread)]
+     (println "fetching " (:id thread) " at depth " depth)
      (if (= 0 depth)
        (assoc converted :comments [])
        (assoc converted :comments
@@ -111,4 +147,6 @@
   "Fetch the thread details (recurring on child ids) for a given thread id."
   ([id] (fetch-thread-details id hn-default-depth))
   ([id depth]
-   (fetch-thread-details-recur (fetch-item-by-id id) depth)))
+   {:status :todo}
+   ;;(fetch-thread-details-recur (fetch-item-by-id id) depth)
+   ))

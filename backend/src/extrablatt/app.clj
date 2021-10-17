@@ -7,20 +7,12 @@
             [ring.util.response :refer [response]]
             [extrablatt.hn :as hn]))
 
-(defn- setup
-  []
-  ;; set the core.async thread pool size to the amount of available cores
-  (java.lang.System/setProperty "clojure.core.async.pool-size"
-                                (str (.availableProcessors (java.lang.Runtime/getRuntime)))))
-
-(setup)
-
 (defroutes api-routes
-  (GET "/" request (response (hn/fetch-top-items)))
   (GET ["/thread/:id" :id #"[0-9]+"] [id depth]
        (response (hn/fetch-thread-details id
                   (try (Integer/parseInt depth)
-                       (catch NumberFormatException e hn/hn-default-depth))))))
+                       (catch NumberFormatException e hn/hn-default-depth)))))
+  (GET "/" request (response (hn/front-page))))
 
 (def app
   (-> api-routes
