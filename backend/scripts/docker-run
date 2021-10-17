@@ -1,0 +1,9 @@
+#!/bin/sh
+
+[ -z "$1" ] && \
+    name="extrablatt-backend" || \
+    name="extrablatt-backend-$1"
+
+[ -z "$port" ] && port=1001
+
+docker run -it --rm --name $name -p 1001:3000 $name

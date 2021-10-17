@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ -z "$1" ] && \
+    docker build -t extrablatt-backend . || \
+    docker build -t "extrablatt-backend-$1" .
