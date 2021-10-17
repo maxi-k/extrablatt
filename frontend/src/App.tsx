@@ -11,6 +11,9 @@ export default function App() {
   return (
     <Router>
         <Switch>
+          <Route path="/story/:id">
+            <h1>Story detail view</h1>
+          </Route>
           <Route path="/">
             <Home />
           </Route>

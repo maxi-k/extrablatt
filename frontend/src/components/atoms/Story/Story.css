@@ -1,0 +1,54 @@
+.story {
+	width: 300px;
+	max-height: 380px;
+	border: 1px solid #000;
+	display: flex;
+	flex-direction: column;
+	margin: 20px 10px;
+	align-items: center;
+	justify-content: flex-start;
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.story__image__container {
+	width: 300px;
+	height: 200px;
+}
+
+.story__meta {
+	width: 280px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.story__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.story__content {
+	padding: 10px;
+}
+
+.story__content__text {
+	font-family: 'Space Grotesk', sans-serif;
+	font-weight: 500;
+	font-size: 19px;
+}
+
+.story__content__author__name {
+	font-weight: 500;
+	color: rgba(1, 1, 1, 0.8);
+}
+
+.story__content__timestamp {
+	color: rgba(1, 1, 1, 0.7);
+}
+
+.story__hot {
+	color: #ff3d00;
+}
