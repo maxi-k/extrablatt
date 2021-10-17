@@ -10,10 +10,12 @@
                  [ring/ring-json "0.5.1"]
                  [ring-cors "0.1.13"]
                  [clj-http "3.12.3"]
-                 [matchbox "0.0.9"]]
+                 ;; TODO: using jetty in production, maybe switch to something else later
+                 [ring/ring-jetty-adapter "1.8.2"]]
   :plugins [[lein-ring "0.12.5"]]
   :ring {:handler extrablatt.app/app}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.2"]
-                        [ring/ring-jetty-adapter "1.8.2"]]}})
+                        [ring/ring-jetty-adapter "1.8.2"]]}
+   :uberjar {:aot :all :main extrablatt.main}})
