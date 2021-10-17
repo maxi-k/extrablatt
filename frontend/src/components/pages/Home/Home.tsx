@@ -1,36 +1,38 @@
 import { useEffect, useState } from "react";
 import { StoryType } from "../../../types/storyType";
+import Loader from "../../atoms/Loader/Loader";
 import Story from "../../atoms/Story";
 import "./Home.css";
 const Home = () => {
-  const [data, setData] = useState<[StoryType]>();
-  const [loading, setLoading] = useState<boolean>(true);
+  const [stories, setStories] = useState<[StoryType]>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
-    setLoading(true);
     try {
-      fetch("http://localhost:1001")
-        .then((res) => res.json())
-        .then((res) => {
-          setData(res);
-        });
+      const fetchStories = async () => {
+        setLoading(true);
+        const reply = await fetch("http://localhost:1001");
+        const data = await reply.json();
+        setStories(data);
+        setLoading(false);
+      };
+      fetchStories();
     } catch (error) {
       setError(true);
     }
-    setLoading(false);
-  }, [setData]);
+  }, [setStories]);
 
   return (
     <div>
-      {data && !loading && !error && (
+      {stories && !loading && !error && (
         <div className="stories">
-          {data.map((item: StoryType) => (
+          {stories.map((item: StoryType) => (
             <Story {...item} />
           ))}
         </div>
       )}
-      {loading && <div>Loading...</div>}
+      {loading && <Loader />}
       {error && <div>Error...</div>}
     </div>
   );

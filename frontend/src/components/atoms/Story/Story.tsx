@@ -8,7 +8,7 @@ const Story = (props: StoryType) => {
   const history = useHistory();
 
   const openLink = () => {
-    history.push("/story/" + props.id);
+    history.push("/thread/" + props.id);
   };
 
   const relativeTimeStamp = formatDistance(

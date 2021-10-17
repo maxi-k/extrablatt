@@ -37,6 +37,7 @@
 .story__content__text {
 	font-family: 'Space Grotesk', sans-serif;
 	font-weight: 500;
+	height: 50px;
 	font-size: 19px;
 }
 
