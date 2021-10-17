@@ -13,7 +13,7 @@
 
 (def hn-default-depth
   "The default depth to fetch for the children of a thread/item."
-  10)
+  2)
 
 (defn- hn-cache-request-time
   "How long to cache requests for before re-fetching based on endpoint."
@@ -65,7 +65,7 @@
   (-> item
       (rename-keys {:by :author})
       (dissoc :kids)
-      (assoc :preview-image "https://cataas.com/cat")))
+      (assoc :previewImage "https://cataas.com/cat")))
 
 (defn fetch-item-by-id
   "Fetch a hackernews item (comment, story) by id."
@@ -81,11 +81,14 @@
   ([ids] (fetch-items-parallel ids identity))
   ([ids f] (fetch-items-parallel ids f fetch-item-by-id))
   ([ids f fetcher]
-   (let [c (async/chan (count ids))
-         results (transient [])]
-     (doseq [id ids] (go (>! c (f (fetcher id)))))
-     (doseq [id ids] (conj! results (<!! c)))
-     (persistent! results))))
+   (let [n (count ids)]
+     (if (zero? n)
+       []
+       (let [c (async/chan n)
+             results (transient [])]
+         (doseq [id ids] (go (>! c (f (fetcher id)))))
+         (doseq [id ids] (conj! results (<!! c)))
+         (persistent! results))))))
 
 (defn fetch-top-items
   ;; TODO find out if HN top endpoint takes an n parameter
@@ -95,9 +98,17 @@
         (take n (fetch-top-story-ids))
         convert-hn-top-item )))
 
+(defn- fetch-thread-details-recur
+  [thread depth]
+   (let [converted (convert-hn-top-item thread)]
+     (if (= 0 depth)
+       (assoc converted :comments [])
+       (assoc converted :comments
+              (fetch-items-parallel (:kids thread)
+                                    #(fetch-thread-details-recur % (- depth 1)))))))
+
 (defn fetch-thread-details
   "Fetch the thread details (recurring on child ids) for a given thread id."
   ([id] (fetch-thread-details id hn-default-depth))
   ([id depth]
-   (let [thread (fetch-item-by-id id)]
-     {:state :todo})))
+   (fetch-thread-details-recur (fetch-item-by-id id) depth)))
