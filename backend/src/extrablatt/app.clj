@@ -17,7 +17,10 @@
 
 (defroutes api-routes
   (GET "/" request (response (hn/fetch-top-items)))
-  (GET ["/thread/:id" :id #"[0-9]+"] [id] (response (hn/fetch-thread-details id))))
+  (GET ["/thread/:id" :id #"[0-9]+"] [id depth]
+       (response (hn/fetch-thread-details id
+                  (try (Integer/parseInt depth)
+                       (catch NumberFormatException e hn/hn-default-depth))))))
 
 (def app
   (-> api-routes

@@ -11,6 +11,10 @@
   "The hacker news base api url"
   "https://hacker-news.firebaseio.com/v0/")
 
+(def hn-default-depth
+  "The default depth to fetch for the children of a thread/item."
+  10)
+
 (defn- hn-cache-request-time
   "How long to cache requests for before re-fetching based on endpoint."
   [endpoint]
@@ -66,9 +70,7 @@
 (defn fetch-item-by-id
   "Fetch a hackernews item (comment, story) by id."
   [id]
-  (-> (fetch-hn-endpoint :item id)
-      (:body)
-      (convert-hn-top-item)))
+  (:body (fetch-hn-endpoint :item id)))
 
 (defn fetch-items-parallel
   "Given a list of item ids, fetch their respective threads in parallel
@@ -89,10 +91,13 @@
   ;; TODO find out if HN top endpoint takes an n parameter
   "Fetch the top n news items."
   ([] (fetch-top-items 50))
-  ([n] (fetch-items-parallel (take n (fetch-top-story-ids)))))
-
+  ([n] (fetch-items-parallel
+        (take n (fetch-top-story-ids))
+        convert-hn-top-item )))
 
 (defn fetch-thread-details
   "Fetch the thread details (recurring on child ids) for a given thread id."
-  [id]
-  {:state :todo})
+  ([id] (fetch-thread-details id hn-default-depth))
+  ([id depth]
+   (let [thread (fetch-item-by-id id)]
+     {:state :todo})))
