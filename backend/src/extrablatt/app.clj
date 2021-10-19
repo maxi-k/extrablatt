@@ -9,7 +9,7 @@
 
 (defroutes api-routes
   (GET ["/thread/:id" :id #"[0-9]+"] [id depth]
-       (response (hn/fetch-thread-details id
+       (response (hn/thread-detail id
                   (try (Integer/parseInt depth)
                        (catch NumberFormatException e hn/hn-default-depth)))))
   (GET "/" request (response (hn/front-page))))
