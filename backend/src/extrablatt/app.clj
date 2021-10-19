@@ -7,20 +7,17 @@
             [ring.util.response :refer [response]]
             [extrablatt.hn :as hn]))
 
-(defn- setup
-  []
-  ;; set the core.async thread pool size to the amount of available cores
-  (java.lang.System/setProperty "clojure.core.async.pool-size"
-                                (str (.availableProcessors (java.lang.Runtime/getRuntime)))))
-
-(setup)
+(defn- parse-number-param
+  "Parse a string parameter and return the given default if it fails."
+  [str-param default]
+  (try (Integer/parseInt str-param)
+       (catch NumberFormatException e default)))
 
 (defroutes api-routes
-  (GET "/" request (response (hn/fetch-top-items)))
+  (GET "/" [count] (response (hn/front-page (parse-number-param count hn/default-front-page-count))))
   (GET ["/thread/:id" :id #"[0-9]+"] [id depth]
-       (response (hn/fetch-thread-details id
-                  (try (Integer/parseInt depth)
-                       (catch NumberFormatException e hn/hn-default-depth))))))
+       (response (hn/thread-detail id
+                                   (parse-number-param depth hn/default-thread-depth)))))
 
 (def app
   (-> api-routes

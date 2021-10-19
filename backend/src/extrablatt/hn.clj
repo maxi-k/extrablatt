@@ -1,114 +1,201 @@
 (ns extrablatt.hn
   (:require
-   [clojure.core.async :as async :refer [<! >! go <!!]]
-   [clojure.core.reducers :as r]
-   [clojure.set :refer [rename-keys]]
-   [cheshire.core :refer [parse-string]]
-   [clj-http.client :as http])
+   [clojure.core.async :as async :refer [<! >! go <!! timeout alts! go-loop close!]]
+   [clojure.set :refer [rename-keys union difference]]
+   [matchbox.core :as m]
+   [affable-async.core :as aff])
   (:import java.time.Instant))
 
 (def hn-base-url
   "The hacker news base api url"
   "https://hacker-news.firebaseio.com/v0/")
 
-(def hn-default-depth
+(def default-thread-depth
   "The default depth to fetch for the children of a thread/item."
-  2)
+  4)
 
-(defn- hn-cache-request-time
-  "How long to cache requests for before re-fetching based on endpoint."
-  [endpoint]
-  (let [map {:topstories 10
-             :item 30}
-        default 30]
-    (get map endpoint default)))
+(def default-front-page-count
+  "Default count of entries to fetch for the front-end."
+  50)
 
-(defn- make-hn-endpoint
-  "Format a hacker-news api url with the given key."
-  [endpoint]
-  (str hn-base-url (name endpoint) ".json"))
-
-(defn- fetch-hn-endpoint-nocache
-  "Fetch a hackernews endpoint, throwing any exceptions that occur.
-  Returns a clojure-data-coerced body."
-  [endpoint]
-  (let [result
-        (-> (make-hn-endpoint (name endpoint))
-            (http/get {:accept :json}))]
-    {:status (:status result)
-     :body (parse-string (:body result) true)}))
-
-;; also look at https://clojuredocs.org/clojure.core/delay for possible implementation
-(def ^:private fetch-hn-endpoint-memoized
-  (memoize (fn [endpoint time]
-             ;; (println "fetching item from remote from " endpoint " with time " time)
-             (fetch-hn-endpoint-nocache endpoint))))
-
-(defn fetch-hn-endpoint
-  "Fetch a hackernews endpoint, potentially using the cache to answer the request.
-  Bubbles errors."
-  ([endpoint additional]
-   (fetch-hn-endpoint (str (name endpoint) "/" additional)))
-  ([endpoint]
-   (let [secs (.getEpochSecond (Instant/now))
-         rounded (- secs (mod secs (hn-cache-request-time endpoint)))]
-     (fetch-hn-endpoint-memoized endpoint rounded))))
-
-(defn fetch-top-story-ids
-  "Fetch the hacker-news top story ids."
-  []
-  (:body (fetch-hn-endpoint :topstories)))
-
-(defn- convert-hn-top-item
+(defn convert-hn-item
   "Converts a hackernews api item to our application-internal format for top stories."
   [item]
   (-> item
-      (rename-keys {:by :author})
-      (dissoc :kids)
+      (rename-keys {:by :author, :kids :comments})
       (assoc :previewImage "https://cataas.com/cat")))
 
-(defn fetch-item-by-id
-  "Fetch a hackernews item (comment, story) by id."
+(def fb-root (m/connect hn-base-url))
+
+(def top-stories
+  "The list of current top thread ids."
+  (ref []))
+
+(def thread-cache
+  "Map from thread-id to {:fetched timestamp, :thread thread}"
+  (ref {}))
+
+(def stories-to-fetch
+  "Set of thread ids that should be fetched in the background."
+  (ref #{}))
+
+(defn is-fresh?
+  "Returns true if the given cache item is still fresh enough"
+  [item]
+  (and item
+       (> 60
+          (- (.getEpochSecond (Instant/now))
+             (.getEpochSecond (:time item))))))
+
+(defn is-fresh-id?
+  "Returns true if the cache-item associated with the given id is fresh."
   [id]
-  (:body (fetch-hn-endpoint :item id)))
+  (is-fresh? (get @thread-cache id)))
 
-(defn fetch-items-parallel
-  "Given a list of item ids, fetch their respective threads in parallel
-  using the given fetcher function (default: fetch-item-by-id).
-  Additionaly, apply the given function f in each parallel execution context
-  to the result (defaults to identity).
-  Return a vector of fetched items, not necesseraly in the input order."
-  ([ids] (fetch-items-parallel ids identity))
-  ([ids f] (fetch-items-parallel ids f fetch-item-by-id))
-  ([ids f fetcher]
-   (let [n (count ids)]
-     (if (zero? n)
-       []
-       (let [c (async/chan n)
-             results (transient [])]
-         (doseq [id ids] (go (>! c (f (fetcher id)))))
-         (doseq [id ids] (conj! results (<!! c)))
-         (persistent! results))))))
+(defn is-dirty-id?
+  "Returns true if the cache-item associated with the given id is fresh."
+  [id]
+  (not (is-fresh-id? id)))
 
-(defn fetch-top-items
-  ;; TODO find out if HN top endpoint takes an n parameter
-  "Fetch the top n news items."
-  ([] (fetch-top-items 50))
-  ([n] (fetch-items-parallel
-        (take n (fetch-top-story-ids))
-        convert-hn-top-item )))
+(defn get-cached-thread
+  "Get a cached thread by id."
+  [id]
+  (when-let [cached (get @thread-cache id)]
+    (:data cached)))
 
-(defn- fetch-thread-details-recur
-  [thread depth]
-   (let [converted (convert-hn-top-item thread)]
-     (if (= 0 depth)
-       (assoc converted :comments [])
-       (assoc converted :comments
-              (fetch-items-parallel (:kids thread)
-                                    #(fetch-thread-details-recur % (- depth 1)))))))
+(defn fetch-and-cache-thread
+  "Fetch the given thread if not in the thread cache already or the last fetched timestamp is too old.
+  Put it into the thread cache and update the timestamp.
+  Returns a channel where the thread will be delivered."
+  ([id] (fetch-and-cache-thread id false))
+  ([id force?]
+   (let [current (get @thread-cache id)]
+     (if (and (not force?) (is-fresh? current))
+       (async/to-chan [(:data current)])
+       (let [output (async/chan)
+             ch (async/chan)
+             closer (m/listen-to fb-root
+                                 ["item" (str id)]
+                                 :value
+                                 (fn [res]
+                                   (when res (go (>! ch res)))))]
+         (go
+           (let [[key raw-thread] (<! ch)
+                 thread (convert-hn-item raw-thread)]
+             (dosync
+              (alter thread-cache assoc (:id thread) {:time (Instant/now)
+                                                    :data thread}))
+             (close! ch)
+             (closer)
+             (>! output thread)
+             (close! output)))
+         output)))))
 
-(defn fetch-thread-details
-  "Fetch the thread details (recurring on child ids) for a given thread id."
-  ([id] (fetch-thread-details id hn-default-depth))
+(def background-fetcher-max-concurrency 64)
+(def thread-detail-fetcher
+  "Fetches thread details in the background by watching
+  the stories-to-fetch ref. Can be stopped by calling it as a function."
+  (let [stop-chan (async/chan)
+        watch-chan (async/chan)
+        fetcher-chan (async/chan)
+        watcher (add-watch stories-to-fetch :thread-detail-fetcher
+                           (fn [key r old new]
+                             (when-not (empty? new)
+                               (go
+                                 (dosync (alter stories-to-fetch difference new))
+                                 (>! watch-chan new)))))]
+    (go-loop [to-fetch #{}]
+      (let [[ids ch] (if (not (empty? to-fetch))
+                       [(async/poll! watch-chan) nil]
+                       (alts! [stop-chan watch-chan]))]
+        (when-not (= ch stop-chan)
+          (let [all (union to-fetch ids)
+                batch (take background-fetcher-max-concurrency all)
+                next-level (->> batch
+                                (map (fn [{:keys [id depth]}]
+                                       (go {:depth depth :thread (<! (fetch-and-cache-thread id))})))
+                                (async/merge)
+                                (async/into [])
+                                (<!)
+                                ((fn [arg] (transduce (comp
+                                                       (filter #(< 0 (:depth %)))
+                                                       (map #(update % :depth dec))
+                                                       (mapcat (fn [{:keys [depth thread]}]
+                                                                 (map (fn [c] {:depth depth :id c})
+                                                                      (:comments thread)))))
+                                                      conj #{} arg))))]
+            (recur (difference (union all next-level)
+                               (into #{} batch)))))))
+    (fn [] (async/>!! stop-chan))))
+
+(defn fetch-thread-details-async
+  [start-depth items]
+  (let [tagged (transduce
+                (comp
+                 (filter is-dirty-id?)
+                 (map (fn [id] {:depth start-depth :id id}))
+                 ) conj #{} items)]
+    (dosync
+     (alter stories-to-fetch union tagged))))
+
+(def ignore-top-stories
+  "Whether to stop caching top stories even if updates arrive."
+  (atom false))
+
+(def top-thread-fetcher
+  "Fetches the top thread ids and puts their ids into the top-stories list.
+  Also triggers fetching their details recursively."
+  (m/listen-list
+   fb-root :topstories
+   (fn [stories]
+     (when (not @ignore-top-stories)
+       (dosync
+        (ref-set top-stories stories))
+       (fetch-thread-details-async default-thread-depth stories)))))
+
+
+(defn front-page
+  "Return the front page, loading missing entries if necessary."
+  ([] (front-page default-front-page-count))
+  ([n]
+   (let [ids (take n @top-stories)
+         len (count ids)
+         chs (async/merge (map (fn [id] (fetch-and-cache-thread id)) ids))]
+     (filter some?
+             (<!!
+              (go-loop [left len
+                        res []]
+                (if (= 0 left)
+                  res
+                  (recur (- left 1)
+                         (conj res (dissoc (<! chs) :comments))))))))))
+
+(defn- collect-thread-detail-recur
+  "Recursively get the children of the given thread,
+  collecting only those that are available locally.
+  Also return ids of those children that aren't cached locally
+  so that the callee can request them from the remote."
+  [start-thread depth]
+  ;; XXX also place dummy elements in :comments of thread for loading/non-requested children?
+  (if (= 0 depth)
+    {:to-fetch {} :thread (assoc start-thread :comments [])}
+    (reduce (fn [acc id]
+              (if-let [cached (get-cached-thread id)]
+                (let [{:keys [to-fetch thread]}
+                      (collect-thread-detail-recur cached (- depth 1))]
+                  (-> acc
+                      (update :to-fetch #(merge-with union % to-fetch))
+                      (update-in [:thread :comments] conj thread)))
+                (update-in acc [:to-fetch depth] conj id)))
+            {:to-fetch {depth #{}} :thread (assoc start-thread :comments [])}
+            (:comments start-thread))))
+
+(defn thread-detail
+  "Get the thread detail of the given item id and child items up to the given depth."
+  ([id] (thread-detail id default-thread-depth))
   ([id depth]
-   (fetch-thread-details-recur (fetch-item-by-id id) depth)))
+   (let [root (<!! (fetch-and-cache-thread id))
+         {:keys [to-fetch thread]} (collect-thread-detail-recur root depth)]
+     (doseq [[rel-depth ids] to-fetch] ;; XXX how deep to fetch the rest of the details? (- depth d)
+       (fetch-thread-details-async depth ids))
+     thread)))
