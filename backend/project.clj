@@ -9,8 +9,6 @@
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-json "0.5.1"]
                  [ring-cors "0.1.13"]
-                 [clj-http "3.12.3"]
-                 [com.danboykis/affable-async "0.1.0"]
                  ;; TODO: using jetty in production, maybe switch to something else later
                  [ring/ring-jetty-adapter "1.8.2"]
                  [matchbox "0.0.9"]]
