@@ -2,8 +2,7 @@
   (:require
    [clojure.core.async :as async :refer [<! >! go <!! timeout alts! go-loop close!]]
    [clojure.set :refer [rename-keys union difference]]
-   [matchbox.core :as m]
-   [affable-async.core :as aff])
+   [matchbox.core :as m])
   (:import java.time.Instant))
 
 (def hn-base-url
@@ -158,7 +157,6 @@
        (dosync
         (ref-set top-stories stories))
        (fetch-thread-details-async default-thread-depth stories)))))
-
 
 (defn front-page
   "Return the front page, loading missing entries if necessary."
