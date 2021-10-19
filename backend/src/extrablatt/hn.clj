@@ -93,9 +93,10 @@
          output)))))
 
 (def background-fetcher-max-concurrency 64)
-(def thread-detail-fetcher
+(defn- setup-thread-detail-fetcher
   "Fetches thread details in the background by watching
   the stories-to-fetch ref. Can be stopped by calling it as a function."
+  []
   (let [stop-chan (async/chan)
         watch-chan (async/chan)
         fetcher-chan (async/chan)
@@ -147,9 +148,10 @@
   "Whether to stop caching top stories even if updates arrive."
   (atom false))
 
-(def top-thread-fetcher
+(defn- setup-top-thread-fetcher
   "Fetches the top thread ids and puts their ids into the top-stories list.
   Also triggers fetching their details recursively."
+  []
   (m/listen-list
    fb-root :topstories
    (fn [stories]
@@ -203,3 +205,13 @@
      (doseq [[rel-depth ids] to-fetch] ;; XXX how deep to fetch the rest of the details? (- depth d)
        (fetch-thread-details-async depth ids))
      thread)))
+
+(def ^:private hn-processes
+  (atom {}))
+
+(defn hn-setup
+  []
+  (reset! hn-processes
+          {:detail-fetcher (setup-thread-detail-fetcher)
+           :story-fetcher (setup-top-thread-fetcher)})
+)
