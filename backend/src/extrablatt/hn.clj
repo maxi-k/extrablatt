@@ -165,18 +165,17 @@
   Also return ids of those children that aren't cached locally
   so that the callee can request them from the remote."
   [start-thread depth]
-  ;; TODO parallelize this if it makes sense
-  ;; TODO also place dummy elements in :comments of thread for loading/non-requested children?
+  ;; XXX also place dummy elements in :comments of thread for loading/non-requested children?
   (if (= 0 depth)
-    {:to-fetch #{} :thread (assoc start-thread :comments [])}
+    {:to-fetch {} :thread (assoc start-thread :comments [])}
     (reduce (fn [acc id]
               (if-let [cached (get @story-cache id)]
                 (let [{:keys [to-fetch thread]}
                       (collect-thread-detail-recur cached (- depth 1))]
                   (-> acc
-                      (update :to-fetch merge-with union to-fetch)
+                      (update :to-fetch #(merge-with union % to-fetch))
                       (update-in [:thread :comments] conj thread)))
-                (update-in acc [:to-fetch depth] id)))
+                (update-in acc [:to-fetch depth] conj id)))
             {:to-fetch {depth #{}} :thread (assoc start-thread :comments [])}
             (:comments start-thread))))
 
@@ -186,5 +185,6 @@
   ([id depth]
    (let [root (<!! (fetch-and-cache-story id))
          {:keys [to-fetch thread]} (collect-thread-detail-recur root depth)]
-     (fetch-story-details-async depth to-fetch)
+     (doseq [[rel-depth ids] to-fetch] ;; XXX how deep to fetch the rest of the details? (- depth d)
+       (fetch-story-details-async depth ids))
      thread)))
