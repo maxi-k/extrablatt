@@ -7,12 +7,17 @@
             [ring.util.response :refer [response]]
             [extrablatt.hn :as hn]))
 
+(defn- parse-number-param
+  "Parse a string parameter and return the given default if it fails."
+  [str-param default]
+  (try (Integer/parseInt str-param)
+       (catch NumberFormatException e default)))
+
 (defroutes api-routes
+  (GET "/" [count] (response (hn/front-page (parse-number-param count hn/default-front-page-count))))
   (GET ["/thread/:id" :id #"[0-9]+"] [id depth]
        (response (hn/thread-detail id
-                  (try (Integer/parseInt depth)
-                       (catch NumberFormatException e hn/hn-default-depth)))))
-  (GET "/" request (response (hn/front-page))))
+                                   (parse-number-param depth hn/default-thread-depth)))))
 
 (def app
   (-> api-routes
