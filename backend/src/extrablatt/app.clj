@@ -19,9 +19,8 @@
        (response (hn/thread-detail id
                                    (parse-number-param depth hn/default-thread-depth)))))
 
-(defn app
-  "Main definition for the webserver."
-  []
+(def app
+  "Main definition for the webserver endpoints."
   (-> api-routes
       (wrap-json-body {:keywords? true})
       (wrap-json-response)
