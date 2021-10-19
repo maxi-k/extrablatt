@@ -12,7 +12,7 @@
 
 (def hn-default-depth
   "The default depth to fetch for the children of a thread/item."
-  2)
+  4)
 
 (defn convert-hn-item
   "Converts a hackernews api item to our application-internal format for top stories."
@@ -90,12 +90,13 @@
         fetcher-chan (async/chan)
         watcher (add-watch stories-to-fetch :story-detail-fetcher
                            (fn [key r old new]
-                             (when (seq? new)
+                             (when-not (empty? new)
                                (go
-                                 (>! watch-chan (dosync (alter stories-to-fetch difference new)))))))]
+                                 (dosync (alter stories-to-fetch difference new))
+                                 (>! watch-chan new)))))]
     (go-loop [to-fetch #{}]
-      (let [[ids ch] (if (seq to-fetch)
-                       [(poll! watch-chan) nil]
+      (let [[ids ch] (if (not (empty? to-fetch))
+                       [(async/poll! watch-chan) nil]
                        (alts! [stop-chan watch-chan]))]
         (when-not (= ch stop-chan)
           (let [all (union to-fetch ids)
@@ -105,37 +106,27 @@
                                        (go {:depth depth :thread (<! (fetch-and-cache-story id))})))
                                 (async/merge)
                                 (async/into [])
-                                (#(transduce (comp
-                                              (filter #(< 0 (:depth %)))
-                                              (map #(update item :depth dec))
-                                              (mapcat (fn [{:keys [depth thread]}]
-                                                        (map (fn [c] {:depth depth :id c})
-                                                             (:comments thread)))))
-                                             conj #{} %)))]
-            (recur (difference (union all next-level) (into #{} batch)))))))
-    (fn [] (>!! stop-chan))))
+                                (<!)
+                                ((fn [arg] (transduce (comp
+                                                       (filter #(< 0 (:depth %)))
+                                                       (map #(update % :depth dec))
+                                                       (mapcat (fn [{:keys [depth thread]}]
+                                                                 (map (fn [c] {:depth depth :id c})
+                                                                      (:comments thread)))))
+                                                      conj #{} arg))))]
+            (recur (difference (union all next-level)
+                               (into #{} batch)))))))
+    (fn [] (async/>!! stop-chan))))
 
 (defn fetch-story-details-async
   [start-depth items]
-  (let [stop-chan (async/chan)]
-    (go-loop [depth start-depth
-              to-fetch items]
-      (when (and (< 0 depth)
-                 (not (async/poll! stop-chan)))
-        (let [results (->> items
-                           (filter is-dirty-id?)
-                           (map #(fetch-and-cache-story %))
-                           (async/merge)
-                           (async/into []))]
-          (println results)
-          (recur (- depth 1)
-                 (reduce
-                  (fn [acc thread]
-                    (-> (:comments thread)
-                        (filter is-dirty-id?)
-                        (into acc)))
-                  #{} results)))))
-    stop-chan))
+  (let [tagged (transduce
+                (comp
+                 (filter is-dirty-id?)
+                 (map (fn [id] {:depth start-depth :id id}))
+                 ) conj #{} items)]
+    (dosync
+     (alter stories-to-fetch union tagged))))
 
 (def ignore-top-stories
   "Whether to stop caching top stories even if updates arrive."
@@ -150,7 +141,7 @@
      (when (not @ignore-top-stories)
        (dosync
         (ref-set top-stories stories))
-       (fetch-story-details-async hn-default-depth (filter is-dirty-id? stories))))))
+       (fetch-story-details-async hn-default-depth stories)))))
 
 (defn front-page
   "Return the front page, loading missing entries if necessary."
