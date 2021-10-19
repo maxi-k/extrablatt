@@ -7,7 +7,7 @@
   (:import java.time.Instant))
 
 (def hn-base-url
-  "The hacker news base api url"
+  "The hackernews base api url"
   "https://hacker-news.firebaseio.com/v0/")
 
 (def default-thread-depth
@@ -25,14 +25,16 @@
       (rename-keys {:by :author, :kids :comments})
       (assoc :previewImage "https://cataas.com/cat")))
 
-(def fb-root (m/connect hn-base-url))
+(def fb-root
+  "Firebase root context for the hackernews firebase api."
+  (m/connect hn-base-url))
 
 (def top-stories
   "The list of current top thread ids."
   (ref []))
 
 (def thread-cache
-  "Map from thread-id to {:fetched timestamp, :thread thread}"
+  "Map from thread-id to {:fetched timestamp, :data thread-data}"
   (ref {}))
 
 (def stories-to-fetch
@@ -48,12 +50,12 @@
              (.getEpochSecond (:time item))))))
 
 (defn is-fresh-id?
-  "Returns true if the cache-item associated with the given id is fresh."
+  "Returns true if the item associated with the given id is cached and fresh."
   [id]
   (is-fresh? (get @thread-cache id)))
 
 (defn is-dirty-id?
-  "Returns true if the cache-item associated with the given id is fresh."
+  "Returns true if the item associated with the given id is not cached or not fresh."
   [id]
   (not (is-fresh-id? id)))
 
@@ -103,7 +105,15 @@
                              (when-not (empty? new)
                                (go
                                  (dosync (alter stories-to-fetch difference new))
-                                 (>! watch-chan new)))))]
+                                 (>! watch-chan new)))))
+        transduce-fetched (fn [arg]
+                            (transduce (comp
+                                        (filter #(< 0 (:depth %)))
+                                        (map #(update % :depth dec))
+                                        (mapcat (fn [{:keys [depth thread]}]
+                                                  (map (fn [c] {:depth depth :id c})
+                                                       (:comments thread)))))
+                                       conj #{} arg))]
     (go-loop [to-fetch #{}]
       (let [[ids ch] (if (not (empty? to-fetch))
                        [(async/poll! watch-chan) nil]
@@ -117,24 +127,20 @@
                                 (async/merge)
                                 (async/into [])
                                 (<!)
-                                ((fn [arg] (transduce (comp
-                                                       (filter #(< 0 (:depth %)))
-                                                       (map #(update % :depth dec))
-                                                       (mapcat (fn [{:keys [depth thread]}]
-                                                                 (map (fn [c] {:depth depth :id c})
-                                                                      (:comments thread)))))
-                                                      conj #{} arg))))]
+                                (transduce-fetched))]
             (recur (difference (union all next-level)
                                (into #{} batch)))))))
     (fn [] (async/>!! stop-chan))))
 
 (defn fetch-thread-details-async
+  "Asynchronously fetch the thread details of the given items
+  tagged as starting with the given depth up to `default-thread-depth`."
   [start-depth items]
   (let [tagged (transduce
                 (comp
                  (filter is-dirty-id?)
-                 (map (fn [id] {:depth start-depth :id id}))
-                 ) conj #{} items)]
+                 (map (fn [id] {:depth start-depth :id id})))
+                conj #{} items)]
     (dosync
      (alter stories-to-fetch union tagged))))
 
