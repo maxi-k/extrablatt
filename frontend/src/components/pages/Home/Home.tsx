@@ -12,7 +12,7 @@ const Home = () => {
     try {
       const fetchStories = async () => {
         setLoading(true);
-        const reply = await fetch("http://localhost:1001");
+        const reply = await fetch("http://localhost:8080");
         const data = await reply.json();
         setStories(data);
         setLoading(false);

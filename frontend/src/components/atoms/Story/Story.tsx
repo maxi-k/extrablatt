@@ -11,6 +11,12 @@ const Story = (props: StoryType) => {
     history.push("/thread/" + props.id);
   };
 
+  const followLink = (e: { stopPropagation: () => void; preventDefault: () => void; }) => {
+    e.stopPropagation();
+    e.preventDefault();
+    window.open(props.url, "_blank");
+  }
+
   const relativeTimeStamp = formatDistance(
     fromUnixTime(props.time),
     new Date(),
@@ -28,7 +34,7 @@ const Story = (props: StoryType) => {
       </div>
       <div className="story__content">
         <div className="story__content__text">
-          <p>
+          <p onClick={followLink}>
             {props.isHot && <i className="story__hot fas fa-fire"></i>} {truncate(props.title, 50)}
           </p>
         </div>
