@@ -3,9 +3,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom";
-import Loader from "./components/atoms/Loader/Loader";
+import Detail from "./components/pages/Detail";
 import Home from "./components/pages/Home";
 
 export default function App() {
@@ -13,7 +12,7 @@ export default function App() {
     <Router>
         <Switch>
           <Route path="/thread/:id">
-            <Loader />
+            <Detail />
           </Route>
           <Route path="/">
             <Home />

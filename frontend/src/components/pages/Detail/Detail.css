@@ -1,0 +1,22 @@
+.thread {
+    padding: 5px 10px 5px 10px;
+}
+
+.thread-even {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.thread-odd {
+    background-color: rgba(0, 255, 0, 0.1);
+}
+
+.thread__content {
+}
+
+.thread__comment_count {
+   color: #666; 
+}
+
+.thread__comments {
+    
+}
