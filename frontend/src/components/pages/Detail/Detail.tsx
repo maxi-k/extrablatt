@@ -1,38 +1,13 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ThreadType } from "../../../types/threadType";
 import Loader from "../../atoms/Loader/Loader";
-import './Detail.css'
-
-type ThreadDetailProps = {thread: ThreadType, level: number}
-const ThreadDetail = (props: ThreadDetailProps) => {
-	const { thread, level} = props;
-	const margin = (level * 20) + 'px';
-	const evenClass = level %2 === 0 ? 'thread-even' : 'thread-odd';
-	const content =
-    "text" in thread
-      ? thread.text
-      : "title" in thread
-      ? thread["title"]
-      : "none";
-	return (
-    <div className={`thread thread-level-${level} ${evenClass}`} style={{ marginLeft: margin }}>
-      <p className={`thread__content`}>{content}</p>
-      <p className={`thread__comment_count`}>{thread.comments.length} comments</p>
-	  <div className={`thread__comments`}>
-      {thread.comments.map((item: ThreadType) =>
-        <ThreadDetail
-          key={item.id}
-          thread={item}
-          level={level + 1} />
-      )}
-	  </div>
-    </div>
-  );
-}
+import Header from "../../atoms/Header/Header";
+import ThreadDetail from "../../molecules/ThreadDetail";
+import "./Detail.css";
 
 const Detail = () => {
-  const { id }: { id: string} = useParams();
+  const { id }: { id: string } = useParams();
   const [thread, setThread] = useState<ThreadType>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
@@ -41,7 +16,9 @@ const Detail = () => {
     try {
       const fetchStories = async () => {
         setLoading(true);
-        const reply = await fetch(`https://0f86cca2a48392.lhr.domains/thread/${id}`);
+        const reply = await fetch(
+          `https://0f86cca2a48392.lhr.domains/thread/${id}`
+        );
         const data = await reply.json();
         setThread(data);
         setLoading(false);
@@ -52,18 +29,16 @@ const Detail = () => {
     }
   }, [setThread]);
 
-
-	return (
-		<>
+  return (
+    <div className="detail">
+      <Header />
       {thread && !loading && !error && (
-        <div className="stories">
-            <ThreadDetail key={thread.id} thread={thread} level={0} />
-        </div>
+        <ThreadDetail key={thread.id} thread={thread} level={0} />
       )}
       {loading && <Loader />}
       {error && <div>Error...</div>}
-		</>
-	);
-}
+    </div>
+  );
+};
 
 export default Detail;
