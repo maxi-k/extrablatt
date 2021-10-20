@@ -5,6 +5,16 @@
    [matchbox.core :as m])
   (:import java.time.Instant))
 
+(def logging
+  "Whether `log` should log the given messages"
+  (atom true))
+
+(defn- log
+  "Log the given items to std out if logging is enabled"
+  [& args]
+  (when @logging
+    (apply println args)))
+
 (def hn-base-url
   "The hackernews base api url"
   "https://hacker-news.firebaseio.com/v0/")
@@ -158,7 +168,8 @@
      (when (not @ignore-top-stories)
        (dosync
         (ref-set top-stories stories))
-       (fetch-thread-details-async default-thread-depth stories)))))
+       (fetch-thread-details-async default-thread-depth stories)
+       (log "Got front page update - currently in cache: " (count @thread-cache) " and to fetch " (count @stories-to-fetch))))))
 
 (defn front-page
   "Return the front page, loading missing entries if necessary."
@@ -211,7 +222,7 @@
 
 (defn hn-setup
   []
-  (reset! hn-processes
-          {:detail-fetcher (setup-thread-detail-fetcher)
-           :story-fetcher (setup-top-thread-fetcher)})
-)
+  (when (empty? @hn-processes)
+    (reset! hn-processes
+            {:detail-fetcher (setup-thread-detail-fetcher)
+             :story-fetcher (setup-top-thread-fetcher)})))
