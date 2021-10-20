@@ -4,6 +4,6 @@
     name="extrablatt-backend" || \
     name="extrablatt-backend-$1"
 
-[ -z "$port" ] && port=1001
+[ -z "$port" ] && port=8080
 
-docker run -it --rm --name $name -p 1001:3000 $name
+docker run -it --rm --name $name -p $port:3000 $name
