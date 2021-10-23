@@ -11,11 +11,14 @@ const Story = (props: StoryType) => {
     history.push("/thread/" + props.id);
   };
 
-  const followLink = (e: { stopPropagation: () => void; preventDefault: () => void; }) => {
+  const followLink = (e: {
+    stopPropagation: () => void;
+    preventDefault: () => void;
+  }) => {
     e.stopPropagation();
     e.preventDefault();
     window.open(props.url, "_blank");
-  }
+  };
 
   const relativeTimeStamp = formatDistance(
     fromUnixTime(props.time),
@@ -32,20 +35,31 @@ const Story = (props: StoryType) => {
       <div className="story__image__container">
         <img className="story__image" src={props.previewImage} alt="story" />
       </div>
+      <div className="story__meta">
+        <div className="story__meta__author__name">
+          <p>@{truncate(props.author, 15)}</p>
+        </div>
+        <div className="story__meta__timestamp">
+          <p>{relativeTimeStamp}</p>
+        </div>
+      </div>
       <div className="story__content">
         <div className="story__content__text">
           <p onClick={followLink}>
-            {props.isHot && <i className="story__hot fas fa-fire"></i>} {truncate(props.title, 50)}
+            {props.isHot && <i className="story__hot fas fa-fire"></i>}{" "}
+            {truncate(props.title, 50)}
           </p>
         </div>
-        </div>
-        <div className="story__meta">
-          <div className="story__content__author__name">
-            <p>@{truncate(props.author, 15)}</p>
-          </div>
-          <div className="story__content__timestamp">
-            <p>{relativeTimeStamp}</p>
-          </div>
+      </div>
+      <div className="story__meta__discussion">
+        {!!props.descendants ? (
+          <p>
+            {props.descendants}{" "}
+            {props.descendants === 1 ? "comment" : "comments"}
+          </p>
+        ) : (
+          <p>No comments</p>
+        )}
       </div>
     </div>
   );

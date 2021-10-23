@@ -14,7 +14,7 @@ const Home = () => {
     try {
       const fetchStories = async () => {
         setLoading(true);
-        const reply = await fetch("https://0f86cca2a48392.lhr.domains");
+        const reply = await fetch(`${process.env.REACT_APP_API_URL}`);
         const data = await reply.json();
         setStories(data);
         setLoading(false);

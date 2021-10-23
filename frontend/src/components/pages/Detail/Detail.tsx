@@ -17,7 +17,7 @@ const Detail = () => {
       const fetchStories = async () => {
         setLoading(true);
         const reply = await fetch(
-          `https://0f86cca2a48392.lhr.domains/thread/${id}`
+          `${process.env.REACT_APP_API_URL}/thread/${id}`
         );
         const data = await reply.json();
         setThread(data);
