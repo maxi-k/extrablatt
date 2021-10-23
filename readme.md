@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/5012d502-09bf-4f94-a5d0-88855f41cdf1/deploy-status)](https://app.netlify.com/sites/extrablatt/deploys)
+
 # Extrablatt
 
 
