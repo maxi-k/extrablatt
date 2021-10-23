@@ -3,7 +3,6 @@ import { StoryType } from "../../../types/storyType";
 import Loader from "../../atoms/Loader/Loader";
 import Story from "../../atoms/Story";
 import Header from "../../atoms/Header/Header";
-import extrablatt from '../../../logo.png';
 import "./Home.css";
 const Home = () => {
   const [stories, setStories] = useState<[StoryType]>();

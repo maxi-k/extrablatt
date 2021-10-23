@@ -27,7 +27,7 @@ const Detail = () => {
     } catch (error) {
       setError(true);
     }
-  }, [setThread]);
+  }, [setThread, id]);
 
   return (
     <div className="detail">

@@ -4,7 +4,6 @@ import './ThreadDetail.css';
 type ThreadDetailProps = { thread: ThreadType; level: number };
 const ThreadDetail = (props: ThreadDetailProps) => {
   const { thread, level } = props;
-  const margin = level * 20 + "px";
   const evenClass = level % 2 === 0 ? "thread-even" : "thread-odd";
   const content =
     "text" in thread
@@ -20,6 +19,7 @@ const ThreadDetail = (props: ThreadDetailProps) => {
     <div
       className={`thread thread-level-${level} ${evenClass}`}>
         { 'url' in thread 
+        // eslint-disable-next-line jsx-a11y/anchor-has-content
         ? <a href={thread['url']} {...contentProps} />
         : <p {...contentProps} />
       }
