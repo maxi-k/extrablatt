@@ -1,35 +1,776 @@
-[
-	{
-		"author": "dhouston",
-		"descendants": 71,
-		"id": 8863,
-		"score": 111,
-		"time": 1175714200,
-		"title": "My YC app: Dropbox - Throw away your USB drive",
-		"type": "story",
-		"url": "http://www.news.example.com/article/20",
-		"comments": [
-			{
-				"by": "norvig",
-				"id": 2921983,
-				"parent": 8863,
-				"text": "Aw shucks, guys ... you make me blush with your compliments.<p>Tell you what, Ill make a deal: I'll keep writing if you keep reading. K?",
-				"time": 1314211127,
-				"type": "comment",
-				"comments": [
-					{
-						"by": "norvig2",
-						"id": 2921984,
-						"parent": 2921983,
-						"text": "One level deeper",
-						"time": 1314212127,
-						"type": "comment",
-						"comments": [
-							"This goes as deep as url parameter ?depth=[N] or a default value if unspecified."
-						]
-					}
-				]
-			}
-		]
-	}
-]
+{
+	"comments": [
+		{
+			"parent": 28953167,
+			"id": 28953718,
+			"text": "Soy Cuba contains lush and gorgeous B&amp;W cinematography. The film opens up with the camera flying over the waters of Cuba; the reflection of the water is glistening in a way unlike other films. I believe they used an X-ray film strip to achieve this shot.<p>Mikhail Kalatozov has included another impressive shot at the end of his previous work, &quot;The Cranes Are Flying.&quot; (Palme d&#x27;Or at Cannes 1958) The camera follows the protagonist, then gets seamlessly lifted up by a crane to depict the entire street parading.<p>While Soviet-era films does not have much exposure in the English-speaking world, there are so many gems, critically and technically. The filmmakers were acutely aware of great filming techniques.<p>Also check out:<p>Walking the Streets of Moscow (1964)\n- B-roll scenery contains another lush reflection of the Moscow waters<p>Ivan the Terrible (1944&#x2F;1958)\n- Eisenstein is an ardent practitioner of the montage, and prefers to static camera shots. However, his compositions are very imaginative, and there is no shot you want to miss. His film also briefly experiments with color, and he exploits colored lighting to emphasize the characters&#x27; psyche.<p>Anything by Andrei Tarkovsky\n- Tarkovsky is indisputably a master of Russian cinema after Eisenstein. He often shoots in nature, but no director shoots with such rich texture of the mud. His long shots emphasizes the bleakness inherent in the Russian psyche.<p>The Ascent (1977)\n- Set in WWII, the film shows the resistance escaping the Nazis covered in snow and panting in the cold. Great snow photography.<p>Hard to Be a God (2013)\n- A sci-fi story on the immigration of humans to a different planet, the colonizers inhabit the inhospitable environment. Like Tarkovsky, the slow dragging in the mud conveys the dreary lives.<p>These are recommendations I came up off the top of my head relating to cinematography, but there are definitely many more to appreciate.",
+			"time": 1634876332,
+			"type": "comment",
+			"author": "coolandsmartrr",
+			"comments": [
+				{
+					"parent": 28953718,
+					"id": 28955466,
+					"text": "The shot from OP looks like IR film, it’s what makes it look “HDR” with plenty of detail in the shadows and sky. If it were shot on normal film then exposing for the sky would make the areas in shadow look black.",
+					"time": 1634897959,
+					"type": "comment",
+					"author": "skhr0680",
+					"comments": [],
+					"previewImage": "https://cataas.com/cat"
+				},
+				{
+					"parent": 28953718,
+					"id": 28954327,
+					"text": "This scene from Cranes are Flying?\n<a href=\"https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;BeAmazed&#x2F;comments&#x2F;oqqgcl&#x2F;this_amazing_shot_from_the_1957_soviet_war_film&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;BeAmazed&#x2F;comments&#x2F;oqqgcl&#x2F;this_amazi...</a>",
+					"time": 1634885062,
+					"type": "comment",
+					"author": "rusanu",
+					"previewImage": "https://cataas.com/cat",
+					"comments": []
+				},
+				{
+					"parent": 28953718,
+					"id": 28954001,
+					"text": "For long, unbroken, takes I would additionally recommend Bi Gan&#x27;s 2018 film Long Day&#x27;s Journey into Night whose second part features an hour long take over various open terrain and enclosures. I would recommend it in any case, as it&#x27;s a beautiful film by a highly creative young director who was inspired by Tarkovsky to become a filmmaker.",
+					"time": 1634880696,
+					"type": "comment",
+					"author": "blancNoir",
+					"comments": [
+						{
+							"parent": 28954001,
+							"id": 28956537,
+							"text": "I would like to recommend Timecode (2000) [1].  The screen is divided into four quarters, each containing a single 93 minute take, <i>all shot simultaneously</i>.  A camera will follow one person into a room and follow another one out, or you end up with multiple cameras showing different angles of the same events, or four completely unrelated events.  Careful audio mixing and timing guides your attention.<p>[1] <a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Timecode_(2000_film)\" rel=\"nofollow\">https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Timecode_(2000_film)</a>",
+							"time": 1634906604,
+							"type": "comment",
+							"author": "mkl",
+							"comments": [
+								{
+									"parent": 28956537,
+									"id": 28962266,
+									"text": "I saw this one in a theater when it came out.  The audio effects were really good.   IIRC many scenes were on an open set, in the streets of LA, so the actors and cinematographers had to deal with that in real time.",
+									"time": 1634934179,
+									"type": "comment",
+									"author": "cbm-vic-20",
+									"previewImage": "https://cataas.com/cat",
+									"comments": []
+								}
+							],
+							"previewImage": "https://cataas.com/cat"
+						},
+						{
+							"parent": 28954001,
+							"id": 28955603,
+							"text": "There&#x27;s also Russian Ark, which is an <i>insane</i> 96 minute tracking shot of multiple scenes in the Winter Palace in St Petersburg.<p><a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Russian_Ark\" rel=\"nofollow\">https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Russian_Ark</a>",
+							"time": 1634899541,
+							"type": "comment",
+							"author": "TheOtherHobbes",
+							"comments": [
+								{
+									"parent": 28955603,
+									"id": 28958558,
+									"text": "Yes a beautiful movie until that violinist looks at the camera.",
+									"time": 1634917161,
+									"type": "comment",
+									"author": "peter422",
+									"previewImage": "https://cataas.com/cat",
+									"comments": []
+								}
+							],
+							"previewImage": "https://cataas.com/cat"
+						},
+						{
+							"parent": 28954001,
+							"id": 28958152,
+							"text": "Thank you! Long Day’s Journey into the Night was the first movie I watch at the cinema after they reopened in 2020.\nI knew nothing about it. I was very confused by the first part, but when the second part started and I noticed they weren’t cutting I was locked in like few other times. I had never seen a movie that depicts so well how it feels to dream, and be in a dream.",
+							"time": 1634915063,
+							"type": "comment",
+							"author": "martin_balsam",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						},
+						{
+							"parent": 28954001,
+							"id": 28954122,
+							"text": "Agreed! I knew to expect it, but not the slow burn of anxiety and mystery that (for me) resulted from being trapped in that single take as it evolved. Our screening was 2D but I think it was shot in 3D. I wonder if that would make the effect even more pronounced.",
+							"time": 1634882573,
+							"type": "comment",
+							"author": "austinpow",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						},
+						{
+							"parent": 28954001,
+							"id": 28954079,
+							"text": "That was really impressive. From motorcycles to lifts, the camera continued throughout various platforms.<p>Bi Gan&#x27;s long shots are definitely influenced by Tarkovsky. It&#x27;s also thematically interesting to see the lives of rural Chinese villages.",
+							"time": 1634882014,
+							"type": "comment",
+							"author": "coolandsmartrr",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				},
+				{
+					"parent": 28953718,
+					"id": 28955277,
+					"text": "My favourite is the &quot;battle on the ice&quot; sequence from Alexander Nevsky, by Eisenstein:<p><a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=vKZPgGbUuX0\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=vKZPgGbUuX0</a><p>... well because it&#x27;s epic! But also because it has a kind of comic-book or perhaps theatric aesthetic. I&#x27;m talking particularly of this scene:<p><a href=\"https:&#x2F;&#x2F;youtu.be&#x2F;vKZPgGbUuX0?t=267\" rel=\"nofollow\">https:&#x2F;&#x2F;youtu.be&#x2F;vKZPgGbUuX0?t=267</a><p>Where you see the Great Magisters of the Teutonic knights riding on as their oriflames pass by (edit: also, Prokoviev). The most epic scene I&#x27;ve watched outside of the final battle in the original Conan movie. And while you can clearly see how it was shot, that doesn&#x27;t detract from how badass it all looks.<p>I don&#x27;t think it&#x27;s possible to create experiences like these with modern techniques, perhaps because the latter are so perfect they leave nothing to the imagination and the emotions of the viewer. I don&#x27;t think modern audiences can even parse that kind of language anymore :(",
+					"time": 1634895349,
+					"type": "comment",
+					"author": "YeGoblynQueenne",
+					"comments": [
+						{
+							"parent": 28955277,
+							"id": 28968123,
+							"text": "I couldn&#x27;t put my finger on it but now I can: it reminds me of wooden puppets theatre, and that goes way back. I wonder if it had been an influence for Eisenstein.",
+							"time": 1634995197,
+							"type": "comment",
+							"author": "richardfey",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						},
+						{
+							"parent": 28955277,
+							"id": 28965143,
+							"text": "Definitely theatrical aesthetic for me; I agree, it looks badass",
+							"time": 1634956220,
+							"type": "comment",
+							"author": "richardfey",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				},
+				{
+					"parent": 28953718,
+					"id": 28953753,
+					"text": "X-Ray or infra-red?",
+					"time": 1634876888,
+					"type": "comment",
+					"author": "justinator",
+					"comments": [
+						{
+							"parent": 28953753,
+							"id": 28954609,
+							"text": "IR.",
+							"time": 1634888726,
+							"type": "comment",
+							"author": "AHabe",
+							"comments": [
+								{
+									"parent": 28954609,
+									"id": 28954690,
+									"text": "Water absorbs IR, making it seem darker.",
+									"time": 1634889650,
+									"type": "comment",
+									"author": "irthomasthomas",
+									"previewImage": "https://cataas.com/cat",
+									"comments": []
+								}
+							],
+							"previewImage": "https://cataas.com/cat"
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				},
+				{
+					"parent": 28953718,
+					"id": 28954859,
+					"text": "Saving this for later. Thanks for the informative post!",
+					"time": 1634891340,
+					"type": "comment",
+					"author": "ivvve",
+					"previewImage": "https://cataas.com/cat",
+					"comments": []
+				},
+				{
+					"parent": 28953718,
+					"id": 28953956,
+					"text": "&gt;&quot;...bleakness inherent in the Russian psyche...&quot;<p>This is one big pile of BS.",
+					"time": 1634879802,
+					"type": "comment",
+					"author": "FpUser",
+					"comments": [
+						{
+							"parent": 28953956,
+							"id": 28954110,
+							"text": "Most Russians I know would agree that there&#x27;s something along those lines in the Russian psyche, although I&#x27;m not sure &quot;bleakness&quot; is the right word.  Fatalism, perhaps?",
+							"time": 1634882441,
+							"type": "comment",
+							"author": "dustintrex",
+							"comments": [
+								{
+									"parent": 28954110,
+									"id": 28963893,
+									"text": "Leviatan is a great movie and show the Russian psyche.\n«In a Russian coastal town, Kolya is forced to fight the corrupt mayor when he is told that his house will be demolished. He recruits a lawyer friend to help, but the man&#x27;s arrival brings further misfortune for Kolya and his family.»\n<a href=\"https:&#x2F;&#x2F;www.imdb.com&#x2F;title&#x2F;tt2802154&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;www.imdb.com&#x2F;title&#x2F;tt2802154&#x2F;</a>",
+									"time": 1634944395,
+									"type": "comment",
+									"author": "lalalandland",
+									"comments": [],
+									"previewImage": "https://cataas.com/cat"
+								},
+								{
+									"parent": 28954110,
+									"id": 28955257,
+									"text": "the idea that it&#x27;s inherent to the Russian psyche is a kind of essentialism, no? I would think that if it exists at all, it would be cultural or environmental.",
+									"time": 1634895208,
+									"type": "comment",
+									"author": "beaconstudios",
+									"comments": [],
+									"previewImage": "https://cataas.com/cat"
+								},
+								{
+									"parent": 28954110,
+									"id": 28954424,
+									"text": "I am Russian. Was born and lived in USSR until I was 30. As you might guess I knew a boatloads of them and I think most of them including yours truly would call a BS on that. Reading Dostoyevsky does not make one  know Russians.",
+									"time": 1634886519,
+									"type": "comment",
+									"author": "FpUser",
+									"comments": [],
+									"previewImage": "https://cataas.com/cat"
+								}
+							],
+							"previewImage": "https://cataas.com/cat"
+						},
+						{
+							"parent": 28953956,
+							"deleted": true,
+							"id": 28958724,
+							"time": 1634917921,
+							"type": "comment",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				}
+			],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28954548,
+			"text": "It is really a beautiful movie. Highly recommended for anyone who loves cinematography.<p>However, as a movie it flopped at the time despite the great technical work. The Soviets completely misread and misunderstood the Cubans and turned into a melancholic poetic piece, that had zero appeal, except maybe for the Soviet team who made it. I mean stuff like the address to &quot;Mr. Columbus&quot; in the intro on how the ships &quot;took away all the sugar and left only tears&quot;. It&#x27;s true figuratively on a level, but it just isn&#x27;t how Cubans would have put it.<p>There is a documentary that was made where they interviewed Cubans and the Russians who worked on the film. It&#x27;s quite fascinating, but I can&#x27;t seem to find it anymore to provide a link to it.",
+			"time": 1634888024,
+			"type": "comment",
+			"author": "rdtsc",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28954081,
+			"text": "1917 had some interesting shots where the camera was transferred from foot to wire to bike&#x2F;car, etc. You can see a bit of it here:<p><a href=\"https:&#x2F;&#x2F;youtu.be&#x2F;bW22bmSWKXU?t=209\" rel=\"nofollow\">https:&#x2F;&#x2F;youtu.be&#x2F;bW22bmSWKXU?t=209</a><p>I worked on a shoot two days ago as a drone operator where we couldn&#x27;t get a drone permit in the conservation park location (raptors nesting at this time of year), even for a few shots 2-5 metres off the ground. The client had a particular shot in mind and literally brought a ladder which we carried a couple hundred metres for the photographer and camera operator to climb.",
+			"time": 1634882076,
+			"type": "comment",
+			"author": "prawn",
+			"comments": [
+				{
+					"parent": 28954081,
+					"id": 28954578,
+					"text": "It makes me happy that at some point, someone says &quot;environment first; non negotiable&quot;.",
+					"time": 1634888350,
+					"type": "comment",
+					"author": "wiz21c",
+					"comments": [
+						{
+							"parent": 28954578,
+							"id": 28954914,
+							"text": "It is definitely much stricter here than other states of Australia. If there is a known sea eagle nest for example, there will be an exclusion zone with a 2km radius.<p>In this case, the raptors on the cliffs meant that we couldn’t use even a micro drone supervised by a ranger several kilometres away.<p>(The project here was for a guided coastal walk.)",
+							"time": 1634891887,
+							"type": "comment",
+							"author": "prawn",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						},
+						{
+							"parent": 28954578,
+							"id": 28956867,
+							"text": "I am involved in a project that is on hold right now because a sea turtle laid eggs on a beach. We are doing the right thing in some narrow areas.",
+							"time": 1634908888,
+							"type": "comment",
+							"author": "mcculley",
+							"comments": [
+								{
+									"parent": 28956867,
+									"id": 28964862,
+									"text": "Reminds me - I was filming for a cruise in a remote area a few months ago. There was a baby turtle that was struggling to get out of the hole from where its siblings had escaped that morning. The guest lecturer ended up in a feisty debate with a guest (who happened to be some sort of environmental researcher) about whether it was appropriate to even-just-slightly help the turtle out of the hole or leave it to struggle and be picked off by birds. All in front of 10-20 other guests who were all pretty keen to see the turtle bolt for the ocean.<p>The lecturer wanted to prevent it being helped but eventually gave in. (The turtle wasn&#x27;t particularly weak, just got a bad break with the shell or caved face of the hole it seemed.)",
+									"time": 1634953195,
+									"type": "comment",
+									"author": "prawn",
+									"previewImage": "https://cataas.com/cat",
+									"comments": []
+								}
+							],
+							"previewImage": "https://cataas.com/cat"
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				}
+			],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28955597,
+			"text": "Ah, no discussion about &quot;impossible&quot; shots is complete without mentioning the penultimate scene of Antonioni&#x27;s masterpiece &quot;Professione: Reporter&quot; (&quot;The Passenger&quot;):<p><a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=pvbqy8FZq8Y\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=pvbqy8FZq8Y</a><p>I read somewhere that this is the film Jack Nicholson is most proud of.<p>&gt; In a DVD commentary, decades later, Nicholson said Antonioni built the entire hotel so as to get this shot.<p>&gt; Since the shot was continuous, it was not possible to adjust the lens aperture as the camera left the room and went into the square. Hence the footage had to be taken in the very late afternoon near dusk, in order to minimise the lighting contrast between the brightness outside and that in the room.<p>&gt; The camera ran on a ceiling track in the hotel room and when it came outside the window, was meant to be picked up by a hook suspended from a giant crane nearly 30 metres high. A system of gyroscopes was fitted on the camera to steady it during the switch from this smooth indoor track to the crane outside. Meanwhile, the bars on the window had been given hinges. When the camera reached the window and the bars were no longer in the field of view, they were swung away to either side. At this time the camera&#x27;s forward movement had to stop for a few seconds as the crane&#x27;s hook grabbed it and took over from the track. To hide this, the lens was slowly and smoothly zoomed until the crane could pull the camera forward.[Note 1] Then the cameraman walked the camera in a circle around the square, giving the crew time to shut the window bars before the camera returned to look through the window from the outside this time. Antonioni directed the scene from a van by means of monitors and microphones, talking to assistants who communicated his instructions to the actors and operators. [0]<p>[0] <a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;The_Passenger_(1975_film)\" rel=\"nofollow\">https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;The_Passenger_(1975_film)</a>",
+			"time": 1634899477,
+			"type": "comment",
+			"author": "lqet",
+			"comments": [],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28953788,
+			"text": "“Russian Ark” from 2002 was composed of a single 96-minute shot.<p><a href=\"https:&#x2F;&#x2F;filmschoolrejects.com&#x2F;russian-ark-long-take&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;filmschoolrejects.com&#x2F;russian-ark-long-take&#x2F;</a>",
+			"time": 1634877330,
+			"type": "comment",
+			"author": "metabagel",
+			"comments": [],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28953607,
+			"text": "Another &quot;impossible&quot; shot that I have always been impressed by:<p><a href=\"https:&#x2F;&#x2F;filmschoolrejects.com&#x2F;contact-mirror-scene&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;filmschoolrejects.com&#x2F;contact-mirror-scene&#x2F;</a><p>&quot;How They Shot the Impossible Mirror Scene in ‘Contact’&quot;",
+			"time": 1634875018,
+			"type": "comment",
+			"author": "rsync",
+			"comments": [],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28953418,
+			"text": "Not a cinematography buff but these shots are still impressive when you try to wrap your head around them.<p>I wish there were a breakdown as to how these kinds of shots were done using the technology they had at the time.<p>Edit: This tweet[1] suggests that the camera was being passed around.<p>[1]: <a href=\"https:&#x2F;&#x2F;twitter.com&#x2F;indiarama&#x2F;status&#x2F;1451251934879387651\" rel=\"nofollow\">https:&#x2F;&#x2F;twitter.com&#x2F;indiarama&#x2F;status&#x2F;1451251934879387651</a>",
+			"time": 1634873243,
+			"type": "comment",
+			"author": "22c",
+			"comments": [
+				{
+					"parent": 28953418,
+					"id": 28954373,
+					"text": "There is, sort of. The Cinematographers&#x27; Mailing List, in constant operation since 1996, is an old-school listserv. Its members range from non-cinematographers, to beginners, to (many) academy-award winners. It is easily the largest single body of living knowledge in the world of cinematography and filmmaking. Join and ask... I promise you there are 100 people who know the granular, minute details of how this shot was accomplished, and chances are good that several members know people who worked on the movie. <a href=\"https:&#x2F;&#x2F;cinematography.net\" rel=\"nofollow\">https:&#x2F;&#x2F;cinematography.net</a><p>As a small bit of trivia for those who wonder - it has been diligently maintained as a listserv, and a very simple website, because it is actively used by filmmaking crews in active production, which frequently takes place in god-forsaken corners of the earth with extremely limited connectivity. If it&#x27;s 2am in the desert in Morocco, and you need help on alternate solutions for the the gimbal rig that just crapped out... you need a low-bandwidth way to tap into the collective wisdom. And that sort of active community happens regularly.",
+					"time": 1634885793,
+					"type": "comment",
+					"author": "lucasgw",
+					"comments": [
+						{
+							"parent": 28954373,
+							"id": 28956071,
+							"text": "Thanks for this wonderful piece of completely unexpected trivia",
+							"time": 1634903175,
+							"type": "comment",
+							"author": "beebeepka",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				},
+				{
+					"parent": 28953418,
+					"id": 28953619,
+					"text": "That would be my guess.<p>Camera man #1 is on the ground. They attach the camera to some sort of pulley which pulls it up the wall. Camera man #2 is on the roof and walks to the room where they&#x27;re all sewing and then attaches to a second pulley that is suspended from cables running between the buildings (you can see them at the top of the shot).",
+					"time": 1634875173,
+					"type": "comment",
+					"author": "superfrank",
+					"comments": [
+						{
+							"parent": 28953619,
+							"id": 28953970,
+							"text": "Ex 2nd camera assist here. Handing off a camera mid-shot just asking for failure. Almost any cost to avoid that is going to be worthwhile. There are some maneuvers that can work, like one person to some mounts. 2 people to a mount is usually even better actually. I am being pretty abstract here because these situations are very rare, unique, and I only ever saw them on indie sets because it’s just too expensive to even try this sort of thing otherwise. But the main point here is that a human + camera is an incredible combination and you want to take every measure possible to never come between them.<p>As for how they executed this shot, there are a lot of possibilities, but I doubt there was a hand off, probably from a person to a cable if so, but in that case they had a poor plan with very good luck.<p>Never come between a man and his camera!",
+							"time": 1634879990,
+							"type": "comment",
+							"author": "derekjdanserl",
+							"comments": [
+								{
+									"parent": 28953970,
+									"id": 28955518,
+									"text": "On the other hand, if you can hand off to a cameraman disguised as a carseat, that makes it all worth it.<p><a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=kxb9xzAaYjM\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=kxb9xzAaYjM</a> (The Raid 2, car chase behind the scenes)",
+									"time": 1634898721,
+									"type": "comment",
+									"author": "bazzargh",
+									"previewImage": "https://cataas.com/cat",
+									"comments": []
+								}
+							],
+							"previewImage": "https://cataas.com/cat"
+						},
+						{
+							"parent": 28953619,
+							"id": 28953629,
+							"text": "Wikipédia says it was just a single cameraman with a hooked vest, it was being attached and detached to cranes as he went<p><a href=\"https:&#x2F;&#x2F;en.m.wikipedia.org&#x2F;wiki&#x2F;I_Am_Cuba\" rel=\"nofollow\">https:&#x2F;&#x2F;en.m.wikipedia.org&#x2F;wiki&#x2F;I_Am_Cuba</a>",
+							"time": 1634875326,
+							"type": "comment",
+							"author": "riffraff",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				},
+				{
+					"parent": 28953418,
+					"id": 28953675,
+					"text": "<a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;I_Am_Cuba\" rel=\"nofollow\">https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;I_Am_Cuba</a>",
+					"time": 1634875709,
+					"type": "comment",
+					"author": "Syzygies",
+					"previewImage": "https://cataas.com/cat",
+					"comments": []
+				},
+				{
+					"parent": 28953418,
+					"id": 28953613,
+					"text": "they were using wires (source: heard from people who worked with authors of the movie)",
+					"time": 1634875102,
+					"type": "comment",
+					"author": "wellthisisgreat",
+					"comments": [
+						{
+							"parent": 28953613,
+							"id": 28953698,
+							"text": "You can literally see the wires in the final section.",
+							"time": 1634876041,
+							"type": "comment",
+							"author": "TylerE",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				}
+			],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28953633,
+			"text": "I will definitely have to watch this!<p>The opening of <i>Touch of Evil</i> (1959) is a long tracking shot that is beautifully choreographed:<p><a href=\"https:&#x2F;&#x2F;youtu.be&#x2F;mBAtcI_t-Z8\" rel=\"nofollow\">https:&#x2F;&#x2F;youtu.be&#x2F;mBAtcI_t-Z8</a><p>But probably the most amazing tracking shot I’ve ever seen is the 59 minute continuous shot at the end of <i>Long Day&#x27;s Journey into Night</i> (2018) which is in 3D, but I’ve only seen the 2D version.",
+			"time": 1634875371,
+			"type": "comment",
+			"author": "js2",
+			"comments": [],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28954252,
+			"text": "I have an original movie poster from Soy Cuba, its a beautiful piece of art, along with all Cuban movie posters. They speak to the creativity and vibrancy of the culture. I suggest a quick google of &#x27;cuban movie posters;&#x27; from what I&#x27;ve been told typically the artist had not seen the movie or a limited amount of it, then was tasked to make an original poster. They often have no similarity to their western movie poster",
+			"time": 1634884242,
+			"type": "comment",
+			"author": "griffinkelly",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28957165,
+			"text": "This entire thread contains some beautiful shots, I&#x27;ve really enjoyed watching them all this morning!<p>I can add the battlefield traversal scene from Children of Men <a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=MjFHqohaHYU\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=MjFHqohaHYU</a> which certainly doesn&#x27;t share Soy Cuba&#x27;s beauty but makes up for it in other ways.",
+			"time": 1634910642,
+			"type": "comment",
+			"author": "scrumper",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28953857,
+			"text": "What an amazing architecture. Shows just how ugly and deplorable modern architecture is.",
+			"time": 1634878378,
+			"type": "comment",
+			"author": "wiseowise",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28961294,
+			"text": "<a href=\"https:&#x2F;&#x2F;nitter.kavin.rocks&#x2F;nickdale&#x2F;status&#x2F;1450617359375343617\" rel=\"nofollow\">https:&#x2F;&#x2F;nitter.kavin.rocks&#x2F;nickdale&#x2F;status&#x2F;14506173593753436...</a>",
+			"time": 1634929715,
+			"type": "comment",
+			"author": "dredmorbius",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28959487,
+			"text": "One of my favorite &quot;impossible&quot; shots is the mirror scene from Contact: <a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=ZD0_5HFMPIg\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=ZD0_5HFMPIg</a>",
+			"time": 1634921172,
+			"type": "comment",
+			"author": "cecilpl2",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28953251,
+			"text": "About the movie: <a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;I_Am_Cuba\" rel=\"nofollow\">https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;I_Am_Cuba</a>",
+			"time": 1634871337,
+			"type": "comment",
+			"author": "greenyoda",
+			"comments": [
+				{
+					"parent": 28953251,
+					"id": 28953610,
+					"text": "&gt; <i>The third story describes the suppression of rebellious students led by a character named Enrique at Havana University (featuring one of the longest camera shots). Enrique is frustrated with the small efforts of the group and wants to do something drastic. He goes off on his own planning on assassinating the chief of police, however when he gets him in his sights, he sees that the police chief is surrounded by his young children, and Enrique cannot bring himself to pull the trigger. While he is away, his fellow revolutionaries are printing flyers. They are infiltrated by police officers who arrest them. One of the revolutionaries begins throwing flyers out to the crowd below only to be shot by one of the police officers. Later on, Enrique is leading a protest at the university. More police are there to break up the crowd with fire hoses. Enrique is shot after the demonstration becomes a riot. At the end, his body is carried through the streets; he has become a martyr to his cause.</i><p>Uhh... wouldn&#x27;t Cuba arrest and &#x2F; or execute a capitalist university student protesting the communist government? Doesn&#x27;t seem very accurate",
+					"time": 1634875070,
+					"type": "comment",
+					"author": "seibelj",
+					"comments": [
+						{
+							"parent": 28953610,
+							"id": 28953658,
+							"text": "The student is the communist, they&#x27;re protesting the government existing before the revolution.<p>People do not generally equate fights for or against one&#x27;s cause, even if the methods are the same.",
+							"time": 1634875571,
+							"type": "comment",
+							"author": "riffraff",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						},
+						{
+							"parent": 28953610,
+							"id": 28953639,
+							"text": "Year 1964, don&#x27;t you think that it would be a communist student protesting against exploitative US-backed regime?",
+							"time": 1634875473,
+							"type": "comment",
+							"author": "gostsamo",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						},
+						{
+							"parent": 28953610,
+							"id": 28953652,
+							"text": "Well... where to begin?<p>* it&#x27;s a 1964 movie<p>* it&#x27;s set in pre-revolutionary times<p>* the students <i>are</i> arrested and&#x2F;or shot, respectively<p>* the students aren&#x27;t capitalists<p>* there were widespread protests, just a few months ago, and not everyone was arrested",
+							"time": 1634875537,
+							"type": "comment",
+							"author": "KarlKemp",
+							"comments": [],
+							"previewImage": "https://cataas.com/cat"
+						},
+						{
+							"parent": 28953610,
+							"id": 28953648,
+							"text": "This is set in pre-communist Cuba, under the dictator Fulgencio Batista.",
+							"time": 1634875525,
+							"type": "comment",
+							"author": "timecube",
+							"previewImage": "https://cataas.com/cat",
+							"comments": []
+						}
+					],
+					"previewImage": "https://cataas.com/cat"
+				}
+			],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28954022,
+			"text": "Does anybody know if it&#x27;s possible to watch the entire movie anywhere? It looks like Milestone Films did a 4k restoration in 2019 but the link to watch it doesn&#x27;t seem to work any more and their web page indicates that physical copies are &quot;not currently available for home use&quot;.",
+			"time": 1634881209,
+			"type": "comment",
+			"author": "dmcginty",
+			"comments": [
+				{
+					"parent": 28954022,
+					"id": 28957485,
+					"text": "In what language? You can watch it on youtube: <a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=lt-RbV8KiC0\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=lt-RbV8KiC0</a> It is in Russian but there are subtitles.",
+					"time": 1634912282,
+					"type": "comment",
+					"author": "yurish",
+					"previewImage": "https://cataas.com/cat",
+					"comments": []
+				}
+			],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28960698,
+			"text": "If you enjoyed this check out the 6 minute shot with no cuts in True Detective. It&#x27;s really something in HD, but I couldn&#x27;t find a video.<p>Here&#x27;s the full thing but at lower resolution (the audio is muffled and it looks washed out to me), also [NSFW]: <a href=\"https:&#x2F;&#x2F;vimeo.com&#x2F;172079250\" rel=\"nofollow\">https:&#x2F;&#x2F;vimeo.com&#x2F;172079250</a>",
+			"time": 1634927104,
+			"type": "comment",
+			"author": "rudedogg",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28954283,
+			"text": "My favorite unbroken take from a modern movie is from the opening scene of Spectre, a James Bond Film: <a href=\"https:&#x2F;&#x2F;youtu.be&#x2F;cbqv1kbsNUY\" rel=\"nofollow\">https:&#x2F;&#x2F;youtu.be&#x2F;cbqv1kbsNUY</a>",
+			"time": 1634884660,
+			"type": "comment",
+			"author": "narrator",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28956711,
+			"text": "Le Haine (95) had a great flying camera scene: <a href=\"https:&#x2F;&#x2F;youtu.be&#x2F;4qo3EwozH0Y\" rel=\"nofollow\">https:&#x2F;&#x2F;youtu.be&#x2F;4qo3EwozH0Y</a> (about half way through) Great Film too!",
+			"time": 1634907754,
+			"type": "comment",
+			"author": "willmacdonald",
+			"comments": [
+				{
+					"parent": 28956711,
+					"id": 28959551,
+					"text": "Other interesting scenes:<p><a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=IFkHadvj4DI\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=IFkHadvj4DI</a><p><a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=sSfciVMm5IM\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=sSfciVMm5IM</a><p>Fun fact: la Haine was filmed in color because the coproductors didn&#x27;t believe a b&amp;w movie would be a hit",
+					"time": 1634921468,
+					"type": "comment",
+					"author": "lm28469",
+					"previewImage": "https://cataas.com/cat",
+					"comments": []
+				},
+				{
+					"parent": 28956711,
+					"id": 28956885,
+					"text": "Thanks! That Soy Cuba scene brought to mind one in La Haine to me too, but I couldn&#x27;t locate it.\nHere&#x27;s La Haine, complete with English subtitles; the famous scene starts at about 40:20.\n<a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=NKppkmlB5HQ\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=NKppkmlB5HQ</a>",
+					"time": 1634909003,
+					"type": "comment",
+					"author": "squarefoot",
+					"previewImage": "https://cataas.com/cat",
+					"comments": []
+				}
+			],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28961478,
+			"text": "Is this available to stream online anywhere?",
+			"time": 1634930587,
+			"type": "comment",
+			"author": "axiomdata316",
+			"comments": [
+				{
+					"parent": 28961478,
+					"id": 28962961,
+					"text": "Mentioned elsewhere in the comments: <a href=\"https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=lt-RbV8KiC0\" rel=\"nofollow\">https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=lt-RbV8KiC0</a> , in Russian but with English subtexts",
+					"time": 1634938070,
+					"type": "comment",
+					"author": "stareatgoats",
+					"previewImage": "https://cataas.com/cat",
+					"comments": []
+				}
+			],
+			"previewImage": "https://cataas.com/cat"
+		},
+		{
+			"parent": 28953167,
+			"id": 28963255,
+			"text": "Looks like the legit just used a camera on a rope lol.  Definitely &quot;impossible&quot; smh",
+			"time": 1634939779,
+			"type": "comment",
+			"author": "RattleyCooper",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28954030,
+			"text": "The thing I have trouble figuring out - is Soy Cuba under copyright?",
+			"time": 1634881308,
+			"type": "comment",
+			"author": "bryanrasmussen",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28958124,
+			"text": "Johnny LaRue was onto something with getting a crane shot into Polynesian Town.",
+			"time": 1634914971,
+			"type": "comment",
+			"author": "linster",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28955347,
+			"text": "This film is absolute must see. But be aware you’ll get both a visual pleasure and a shot of communism right into your heart :)",
+			"time": 1634896359,
+			"type": "comment",
+			"author": "mahoro",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28955896,
+			"text": "Without any context, this makes for a pretty epic article title",
+			"time": 1634901932,
+			"type": "comment",
+			"author": "GameOfKnowing",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28955225,
+			"text": "Thanks for changing the absolutely insufferable title of the tweet!",
+			"time": 1634894902,
+			"type": "comment",
+			"author": "YeGoblynQueenne",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"parent": 28953167,
+			"id": 28957012,
+			"text": "Fun fact: Kalatozov was actually Georgian, born as Kalatozishvili. His family belonged to a noble Georgian Amirejibi house that traces its history back to the 13th century.<p>One of Mikhail&#x27;s uncles served as a General in the Imperial Russian Army, while Georgia was annexed by Russia. Another one was among the founders of the Tbilisi State University.",
+			"time": 1634909697,
+			"type": "comment",
+			"author": "Giorgi",
+			"previewImage": "https://cataas.com/cat",
+			"comments": []
+		},
+		{
+			"dead": true,
+			"parent": 28953167,
+			"comments": [],
+			"time": 1634982458,
+			"type": "comment",
+			"previewImage": "https://cataas.com/cat",
+			"author": "claraviva",
+			"id": 28967023,
+			"text": "ETHICAL HACKER SERVICES<p>Require services of an ethical hacker for your specialized Hacks?<p>+ Access various social networks (facebook, twitter, Instagram, Google+, etc)<p>+Clear Credit Card Debts<p>+Bank Account Hacks<p>+Hack into email accounts (gmail, yahoo, aol, etc)<p>+Hack various Blog&#x2F;Website platforms<p>-Contact Cyber Hamster via email: fasttechhacker@gmail.com"
+		},
+		{
+			"parent": 28953167,
+			"id": 28955675,
+			"text": "Two soyjaks (Fidel&amp;Ernesto) pointing at starving Russians who are making free(!) propaganda flick for them.",
+			"time": 1634900184,
+			"type": "comment",
+			"author": "justshowpost",
+			"comments": [
+				{
+					"parent": 28955675,
+					"id": 28956229,
+					"text": "Ehh, starving in 1964? Maybe not living extra lavish, but hardly starving.",
+					"time": 1634904316,
+					"type": "comment",
+					"author": "artem247",
+					"previewImage": "https://cataas.com/cat",
+					"comments": []
+				}
+			],
+			"previewImage": "https://cataas.com/cat"
+		}
+	],
+	"time": 1634870218,
+	"type": "story",
+	"previewImage": "https://cataas.com/cat",
+	"descendants": 130,
+	"title": "The 'impossible' crane shot from Soy Cuba (1964) [video]",
+	"author": "tehnub",
+	"id": 28953167,
+	"score": 488,
+	"url": "https://twitter.com/nickdale/status/1450617359375343617"
+}
