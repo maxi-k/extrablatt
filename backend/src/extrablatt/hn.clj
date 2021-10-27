@@ -2,7 +2,8 @@
   (:require
    [clojure.core.async :as async :refer [<! >! go <!! timeout alts! go-loop close!]]
    [clojure.set :refer [rename-keys union difference]]
-   [matchbox.core :as m])
+   [matchbox.core :as m]
+   [com.stuartsierra.component :as component])
   (:import java.time.Instant))
 
 (def logging
@@ -140,7 +141,9 @@
                                 (transduce-fetched))]
             (recur (difference (union all next-level)
                                (into #{} batch)))))))
-    (fn [] (async/>!! stop-chan))))
+    (fn []
+      (remove-watch stories-to-fetch :thread-detail-fetcher)
+      (async/>!! stop-chan))))
 
 (defn fetch-thread-details-async
   "Asynchronously fetch the thread details of the given items
@@ -178,6 +181,7 @@
    (let [ids (take n @top-stories)
          len (count ids)
          chs (async/merge (map (fn [id] (fetch-and-cache-thread id)) ids))]
+     (print n)
      (filter some?
              (<!!
               (go-loop [left len
@@ -217,12 +221,18 @@
        (fetch-thread-details-async depth ids))
      thread)))
 
-(def ^:private hn-processes
-  (atom {}))
+(defrecord Hackernews []
+    component/Lifecycle
+    ;; TODO also put global state (caches etc) into components
+    (start [self]
+      (-> self
+          (assoc :detail-fetcher (setup-thread-detail-fetcher))
+          (assoc :story-fetcher (setup-top-thread-fetcher))))
 
-(defn hn-setup
-  []
-  (when (empty? @hn-processes)
-    (reset! hn-processes
-            {:detail-fetcher (setup-thread-detail-fetcher)
-             :story-fetcher (setup-top-thread-fetcher)})))
+    (stop [{:as self :keys [detail-fetcher story-fetcher]}]
+      (story-fetcher)
+      (detail-fetcher)))
+
+(defn new-hackernews []
+  (map->Hackernews {}))
+
