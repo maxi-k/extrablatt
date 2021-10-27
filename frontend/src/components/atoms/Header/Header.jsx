@@ -14,6 +14,7 @@ const Header = () => {
       src={extrablatt}
       alt="extrablatt"
       className="extrablatt"
+      style={{ cursor: "pointer" }}
     />
   );
 };

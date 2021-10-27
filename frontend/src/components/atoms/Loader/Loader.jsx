@@ -1,5 +1,5 @@
 import './Loader.css';
 
-const Loader = () => <div class="loader">Loading...</div>;
+const Loader = () => <div className="loader">Loading...</div>;
 
 export default Loader;

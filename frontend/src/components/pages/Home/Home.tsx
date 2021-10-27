@@ -30,7 +30,7 @@ const Home = () => {
       {stories && !loading && !error && (
         <div className="stories">
           {stories.map((item: StoryType) => (
-            <Story {...item} />
+            <Story {...item} key={item.id} />
           ))}
         </div>
       )}

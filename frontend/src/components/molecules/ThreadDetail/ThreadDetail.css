@@ -3,6 +3,7 @@
 	border-left: 1px solid #eee;
 	font-family: 'IBM Plex Sans', sans-serif;
 	font-size: 16px;
+	color:rgba(1, 1, 1, 1);
 }
 
 .thread a {
@@ -22,6 +23,32 @@ a:hover {
 	display: block;
 }
 
+.thread__expandable__text {
+}
+
+.thread__header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: rgba(1, 1, 1, 0.7);
+}
+
+.thread__header__title {
+	font-family: 'Space Grotesk', sans-serif;
+	font-weight: 500;
+	font-size: 3rem;
+	text-align: center;
+	color:rgba(1, 1, 1, 1);
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.clickable:hover {
+	color: red;
+}
+
 .thread__content>p {
 	margin: 4px 0px;
 	padding: 0px;
@@ -35,9 +62,3 @@ a:hover {
 .thread__content:hover {
 	background-color: #eee;
 }
-
-.thread__comment_count {
-	color: #666;
-}
-
-.thread__comments {}

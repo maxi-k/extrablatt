@@ -1,7 +1,6 @@
-import { formatDistance } from "date-fns";
-import { fromUnixTime } from "date-fns/esm";
 import { useHistory } from "react-router";
 import { StoryType } from "../../../types/storyType";
+import { relativeTimeStamp } from "../../../util";
 import "./Story.css";
 
 const Story = (props: StoryType) => {
@@ -20,12 +19,6 @@ const Story = (props: StoryType) => {
     window.open(props.url, "_blank");
   };
 
-  const relativeTimeStamp = formatDistance(
-    fromUnixTime(props.time),
-    new Date(),
-    { addSuffix: true }
-  );
-
   const truncate = (str: string, n: number) => {
     return str?.length > n ? str.substr(0, n - 4) + "..." : str;
   };
@@ -40,7 +33,7 @@ const Story = (props: StoryType) => {
           <p>@{truncate(props.author, 15)}</p>
         </div>
         <div className="story__meta__timestamp">
-          <p>{relativeTimeStamp}</p>
+          <p>{relativeTimeStamp(props.time)}</p>
         </div>
       </div>
       <div className="story__content">
