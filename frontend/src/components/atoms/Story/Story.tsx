@@ -10,6 +10,19 @@ const Story = (props: StoryType) => {
     history.push("/thread/" + props.id);
   };
 
+  let image = null;
+  if (props.previewImage) {
+    image = (
+      <img className="story__image" src={props.previewImage} alt="story" />
+    );
+  } else {
+    image = (
+      <div className="story__image__placeholder">
+        <p>No preview available</p>
+      </div>
+    );
+  }
+
   const followLink = (e: {
     stopPropagation: () => void;
     preventDefault: () => void;
@@ -25,9 +38,7 @@ const Story = (props: StoryType) => {
 
   return (
     <div className="story" onClick={openLink}>
-      <div className="story__image__container">
-        <img className="story__image" src={props.previewImage} alt="story" />
-      </div>
+      <div className="story__image__container">{image}</div>
       <div className="story__meta">
         <div className="story__meta__author__name">
           <p>@{truncate(props.author, 15)}</p>
