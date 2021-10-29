@@ -231,7 +231,11 @@
 
     (stop [{:as self :keys [detail-fetcher story-fetcher]}]
       (story-fetcher)
-      (detail-fetcher)))
+      (detail-fetcher)
+      (dosync
+       (var-set top-stories [])
+       (var-set thread-cache {})
+       (var-set stories-to-fetch #{}))))
 
 (defn new-hackernews []
   (map->Hackernews {}))
