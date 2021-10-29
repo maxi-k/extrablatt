@@ -18,5 +18,6 @@
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.2"]
-                        [ring/ring-jetty-adapter "1.8.2"]]}
+                        [ring/ring-jetty-adapter "1.8.2"]
+                        [org.clojure/tools.namespace "1.1.0"]]}
    :uberjar {:aot [extrablatt.main] :main extrablatt.main}})

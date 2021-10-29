@@ -127,7 +127,7 @@
                                        conj #{} arg))]
     (go-loop [to-fetch #{}]
       (let [[ids ch] (if (not (empty? to-fetch))
-                       [(async/poll! watch-chan) nil]
+                       (alts! [stop-chan watch-chan] :default nil)
                        (alts! [stop-chan watch-chan]))]
         (when-not (= ch stop-chan)
           (let [all (union to-fetch ids)
@@ -143,7 +143,7 @@
                                (into #{} batch)))))))
     (fn []
       (remove-watch stories-to-fetch :thread-detail-fetcher)
-      (async/>!! stop-chan))))
+      (async/>!! stop-chan ::stop))))
 
 (defn fetch-thread-details-async
   "Asynchronously fetch the thread details of the given items
@@ -232,10 +232,12 @@
     (stop [{:as self :keys [detail-fetcher story-fetcher]}]
       (story-fetcher)
       (detail-fetcher)
+      (print "resetting global state")
       (dosync
-       (var-set top-stories [])
-       (var-set thread-cache {})
-       (var-set stories-to-fetch #{}))))
+       (ref-set top-stories [])
+       (ref-set thread-cache {})
+       (ref-set stories-to-fetch #{}))
+      (dissoc self :story-fetcher :detail-fetcher)))
 
 (defn new-hackernews []
   (map->Hackernews {}))

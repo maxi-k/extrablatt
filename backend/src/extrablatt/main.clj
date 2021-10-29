@@ -11,26 +11,24 @@
           port (Integer/valueOf (or (System/getenv "port") "3000"))]
       (java.lang.System/setProperty "clojure.core.async.pool-size"
                                     (str processors))
-      (-> self
-          (assoc :async-pool-size processors)
-          (assoc :port port))))
+      (assoc self :async-pool-size processors :port port)))
   (stop [self]))
 
 (defn new-environment
   []
   (map->EnvironmentComponent {}))
 
-(defrecord ServerComponent [environment app]
+(defrecord ServerComponent [config environment app]
   component/Lifecycle
 
   (start [self]
-    (assoc self :server (run-jetty (:api app) {:port (:port environment)})))
-
+    (assoc self :server (run-jetty (:api app) {:port (:port environment)
+                                               :join? (:block? config)})))
   (stop [{:as self :keys [server]}]
     (.stop server)))
 
-(defn new-server []
-  (map->ServerComponent {}))
+(defn new-server [block?]
+  (map->ServerComponent {:block? block?}))
 
 (defn load-hackernews []
   (require 'extrablatt.hn)
@@ -41,13 +39,13 @@
   ((resolve 'extrablatt.app/new-app)))
 
 (defn server-system
-  []
+  [config]
   (component/system-map
    :environment (new-environment)
    :hackernews (load-hackernews)
    :app (component/using (load-app) [:hackernews])
-   :server (component/using (new-server) [:environment :app])))
+   :server (component/using (new-server config) [:environment :app])))
 
 ;; TODO use https://cognitect.com/blog/2013/06/04/clojure-workflow-reloaded in user.clj
 (defn -main [& args]
-  (component/start (server-system)))
+  (component/start (server-system {:block? true})))
