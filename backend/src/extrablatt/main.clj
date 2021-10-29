@@ -1,10 +1,7 @@
 (ns extrablatt.main
   (:require
    [com.stuartsierra.component :as component]
-   [ring.adapter.jetty :refer [run-jetty]]
-   [extrablatt.app :as app]
-   [extrablatt.hn :as hn]
-   )
+   [ring.adapter.jetty :refer [run-jetty]])
   (:gen-class))
 
 (defrecord EnvironmentComponent []
@@ -27,7 +24,7 @@
   component/Lifecycle
 
   (start [self]
-    (assoc self :server (run-jetty (app) (:port environment))))
+    (assoc self :server (run-jetty (:api app) {:port (:port environment)})))
 
   (stop [{:as self :keys [server]}]
     (.stop server)))
@@ -35,24 +32,21 @@
 (defn new-server []
   (map->ServerComponent {}))
 
-(defn app-system
+(defn load-hackernews []
+  (require 'extrablatt.hn)
+  ((resolve 'extrablatt.hn/new-hackernews)))
+
+(defn load-app []
+  (require 'extrablatt.app)
+  ((resolve 'extrablatt.app/new-app)))
+
+(defn server-system
   []
   (component/system-map
    :environment (new-environment)
-   :hackernews (hn/new-hackernews)
-   :app (component/using (app/new-app) [:hackernews])))
-
-(defn server-system
-  "The main server system, responsible for starting and stopping all used components."
-  []
-  (merge (app-system)
-         (component/system-map
-          :server (component/using (new-server) [:environment :app]))))
-
-(defn dev-app-handler
-  [config]
-  (let [system (app-system)]
-    (:api (:app system))))
+   :hackernews (load-hackernews)
+   :app (component/using (load-app) [:hackernews])
+   :server (component/using (new-server) [:environment :app])))
 
 ;; TODO use https://cognitect.com/blog/2013/06/04/clojure-workflow-reloaded in user.clj
 (defn -main [& args]

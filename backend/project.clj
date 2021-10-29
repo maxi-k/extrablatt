@@ -15,9 +15,8 @@
                  [matchbox "0.0.9"]
                  [clj-http "3.12.3"]]
   :plugins [[lein-ring "0.12.5"]]
-  :ring {:handler extrablatt.main/dev-app-handler}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.2"]
                         [ring/ring-jetty-adapter "1.8.2"]]}
-   :uberjar {:aot :all :main extrablatt.main}})
+   :uberjar {:aot [extrablatt.main] :main extrablatt.main}})
