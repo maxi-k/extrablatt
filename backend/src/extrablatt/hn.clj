@@ -186,7 +186,7 @@
   "Try to associate the cached image with the given thread."
   [thread]
   (let [cache (:cache @active-image-fetcher)
-        saved (@cache (:url thread))]
+        saved (@cache (:id thread))]
     (if (and saved (not= :not-found saved))
       (assoc thread :previewImage saved)
       thread)))
