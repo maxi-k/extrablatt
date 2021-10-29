@@ -8,7 +8,7 @@
   component/Lifecycle
   (start [self]
     (let [processors (max 8 (.availableProcessors (java.lang.Runtime/getRuntime)))
-          port (Integer/valueOf (or (System/getenv "port") "3000"))]
+          port (Integer/valueOf (or (System/getenv "port") "8080"))]
       (java.lang.System/setProperty "clojure.core.async.pool-size"
                                     (str processors))
       (assoc self :async-pool-size processors :port port)))

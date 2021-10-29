@@ -1,9 +1,10 @@
 (ns extrablatt.hn
   (:require
+   [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [<! >! go <!! timeout alts! go-loop close!]]
    [clojure.set :refer [rename-keys union difference]]
    [matchbox.core :as m]
-   [com.stuartsierra.component :as component])
+   [extrablatt.image :as img])
   (:import java.time.Instant))
 
 (def logging
@@ -32,8 +33,7 @@
   "Converts a hackernews api item to our application-internal format for top stories."
   [item]
   (-> item
-      (rename-keys {:by :author, :kids :comments})
-      (assoc :previewImage "https://cataas.com/cat")))
+      (rename-keys {:by :author, :kids :comments})))
 
 (def fb-root
   "Firebase root context for the hackernews firebase api."
@@ -50,6 +50,11 @@
 (def stories-to-fetch
   "Set of thread ids that should be fetched in the background."
   (ref #{}))
+
+;; TODO hacky global state to glue component systems together
+(def active-image-fetcher
+  "Image fetcher instance used"
+  (atom nil))
 
 (defn is-fresh?
   "Returns true if the given cache item is still fresh enough"
@@ -94,9 +99,12 @@
          (go
            (let [[key raw-thread] (<! ch)
                  thread (convert-hn-item raw-thread)]
+             (img/find-image-async @active-image-fetcher
+                                   (:id thread)
+                                   (:url thread))
              (dosync
               (alter thread-cache assoc (:id thread) {:time (Instant/now)
-                                                    :data thread}))
+                                                      :data thread}))
              (close! ch)
              (closer)
              (>! output thread)
@@ -174,6 +182,15 @@
        (fetch-thread-details-async default-thread-depth stories)
        (log "Got front page update - currently in cache: " (count @thread-cache) " and to fetch " (count @stories-to-fetch))))))
 
+(defn- assoc-cached-image
+  "Try to associate the cached image with the given thread."
+  [thread]
+  (let [cache (:cache @active-image-fetcher)
+        saved (@cache (:url thread))]
+    (if (and saved (not= :not-found saved))
+      (assoc thread :previewImage saved)
+      thread)))
+
 (defn front-page
   "Return the front page, loading missing entries if necessary."
   ([] (front-page default-front-page-count))
@@ -189,7 +206,7 @@
                 (if (= 0 left)
                   res
                   (recur (- left 1)
-                         (conj res (dissoc (<! chs) :comments))))))))))
+                         (conj res (assoc-cached-image (dissoc (<! chs) :comments)))))))))))
 
 (defn- collect-thread-detail-recur
   "Recursively get the children of the given thread,
@@ -221,10 +238,11 @@
        (fetch-thread-details-async depth ids))
      thread)))
 
-(defrecord Hackernews []
+(defrecord HackernewsFetcher [image-fetcher]
     component/Lifecycle
     ;; TODO also put global state (caches etc) into components
     (start [self]
+      (reset! active-image-fetcher image-fetcher)
       (-> self
           (assoc :detail-fetcher (setup-thread-detail-fetcher))
           (assoc :story-fetcher (setup-top-thread-fetcher))))
@@ -232,6 +250,7 @@
     (stop [{:as self :keys [detail-fetcher story-fetcher]}]
       (story-fetcher)
       (detail-fetcher)
+      (reset! active-image-fetcher nil)
       (print "resetting global state")
       (dosync
        (ref-set top-stories [])
@@ -240,5 +259,8 @@
       (dissoc self :story-fetcher :detail-fetcher)))
 
 (defn new-hackernews []
-  (map->Hackernews {}))
-
+  (component/system-map
+   :image-fetcher (img/new-image-fetcher)
+   :hackernews-fetcher (component/using
+                        (map->HackernewsFetcher {})
+                        [:image-fetcher])))

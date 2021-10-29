@@ -13,7 +13,8 @@
                  ;; TODO: using jetty in production, maybe switch to something else later
                  [ring/ring-jetty-adapter "1.8.2"]
                  [matchbox "0.0.9"]
-                 [clj-http "3.12.3"]]
+                 [clj-http "3.12.3"]
+                 [enlive "1.1.6"]]
   :plugins [[lein-ring "0.12.5"]]
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
