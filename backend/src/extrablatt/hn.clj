@@ -178,7 +178,7 @@
                                 (async/into [])
                                 (<!)
                                 (transduce-fetched))]
-            (update-cache-stats (- (count to-fetch) (count batch)))
+            (update-cache-stats (max 0 (- (count to-fetch) (count batch))))
             (log "recurring with to-fetch " (count to-fetch) " after batch " (count batch)
                  "with type " (type to-fetch)
                  "and depth of batch " (map :depth batch))
