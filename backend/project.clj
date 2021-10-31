@@ -16,9 +16,13 @@
                  [clj-http "3.12.3"]
                  [enlive "1.1.6"]]
   :plugins [[lein-ring "0.12.5"]]
+  :uberjar-name "extrablatt-standalone.jar"
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.2"]
                         [ring/ring-jetty-adapter "1.8.2"]
-                        [org.clojure/tools.namespace "1.1.0"]]}
-   :uberjar {:aot [extrablatt.main] :main extrablatt.main}})
+                        [org.clojure/tools.namespace "1.1.0"]]
+         :source-paths ["dev" "src"]}
+   :uberjar {:aot :all
+             :main extrablatt.main
+             :source-paths ["src"]}})

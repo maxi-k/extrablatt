@@ -35,10 +35,6 @@
   (-> item
       (rename-keys {:by :author, :kids :comments})))
 
-(def fb-root
-  "Firebase root context for the hackernews firebase api."
-  (m/connect hn-base-url))
-
 (def top-stories
   "The list of current top thread ids."
   (ref []))
@@ -50,6 +46,10 @@
 (def stories-to-fetch
   "Set of thread ids that should be fetched in the background."
   (ref #{}))
+
+(def fb-root
+  "Firebase root context for the hackernews firebase api."
+  (atom nil))
 
 ;; TODO hacky global state to glue component systems together
 (def active-image-fetcher
@@ -91,7 +91,7 @@
        (async/to-chan [(:data current)])
        (let [output (async/chan)
              ch (async/chan)
-             closer (m/listen-to fb-root
+             closer (m/listen-to @fb-root
                                  ["item" (str id)]
                                  :value
                                  (fn [res]
@@ -185,7 +185,7 @@
   Also triggers fetching their details recursively."
   []
   (m/listen-list
-   fb-root :topstories
+   @fb-root :topstories
    (fn [stories]
      (when (not @ignore-top-stories)
        (let [story-set (into #{} stories)
@@ -265,6 +265,7 @@
     ;; TODO also put global state (caches etc) into components
     (start [self]
       (reset! active-image-fetcher image-fetcher)
+      (reset! fb-root (m/connect hn-base-url))
       (-> self
           (assoc :detail-fetcher (setup-thread-detail-fetcher))
           (assoc :story-fetcher (setup-top-thread-fetcher))))
@@ -273,6 +274,7 @@
       (story-fetcher)
       (detail-fetcher)
       (reset! active-image-fetcher nil)
+      (reset! fb-root nil)
       (print "resetting global state")
       (dosync
        (ref-set top-stories #{})
