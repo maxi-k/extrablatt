@@ -238,22 +238,13 @@
   "Return the front page, loading missing entries if necessary."
   ([] (front-page default-front-page-count))
   ([n]
-   (let [ids (take n @top-stories)
-         len (count ids)
-         chs (async/merge (map (fn [id] (fetch-and-cache-thread id)) ids))
-         timeout (async/timeout front-page-timeout)]
-     (sort (fn [t1 t2] (- (compare (:id t1) (:id t2))))
-      (filter some?
-              (<!!
-               (go-loop [left len
-                         res []]
-                 (if (= 0 left)
-                   res
-                   (let [[val ch] (alts! [timeout chs])]
-                     (if (= ch timeout)
-                       res
-                       (recur (- left 1)
-                              (conj res (assoc-cached-image (dissoc val :comments))))))))))))))
+   (let [ids (take n @top-stories)]
+     (take n
+           (->> @top-stories
+                (map (fn [id]
+                       (if-let [cached (@thread-cache id)]
+                         (assoc-cached-image (dissoc (:data cached) :comments)))))
+                (filter some?))))))
 
 (defn- collect-thread-detail-recur
   "Recursively get the children of the given thread,
