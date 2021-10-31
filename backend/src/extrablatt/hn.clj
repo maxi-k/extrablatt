@@ -113,7 +113,7 @@
              (close! output)))
          output)))))
 
-(def background-fetcher-max-concurrency 64)
+(def background-fetcher-max-concurrency 32)
 (defn- setup-thread-detail-fetcher
   "Fetches thread details in the background by watching
   the stories-to-fetch ref. Can be stopped by calling it as a function."

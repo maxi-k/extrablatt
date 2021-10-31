@@ -30,7 +30,7 @@
 
 (def meta-image-tags
   "Meta tags that are used for assigning an image to an article/site."
-  #{"og:image" "twitter:image:src"})
+  #{"og:image" "twitter:image:src" "msapplication-TileImage"})
 
 (defn- extract-meta-image
   "Tries to extract an image url from the documents meta tags."
@@ -77,7 +77,7 @@
   (let [doc (html/html-snippet html-string)
         img (or
              (extract-meta-image doc) ;; images from meta nodes
-             (extract-img-tag-image doc [#{:article :.content} :img]) ;; first image from an article tag / .content div
+             (extract-img-tag-image doc [#{:article :.content :.page} :img]) ;; first image from an article tag / .content div
              (extract-img-tag-image doc [:header :img]) ;; first image from some header
              (extract-img-tag-image doc [:aside :img]) ;; first image from some aside
              (extract-img-tag-image doc)) ;; first image from body
