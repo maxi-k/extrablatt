@@ -9,7 +9,7 @@
 
 (def logging
   "Whether `log` should log the given messages"
-  (atom true))
+  (atom false))
 
 (defn- log
   "Log the given items to std out if logging is enabled"
@@ -100,9 +100,10 @@
            (let [[key raw-thread] (<! ch)
                  thread (convert-hn-item raw-thread)]
              (when thread
-               (img/find-image-async @active-image-fetcher
-                                     (:id thread)
-                                     (:url thread))
+               (when (:url thread)
+                 (img/find-image-async @active-image-fetcher
+                                       (:id thread)
+                                       (:url thread)))
                (dosync
                 (alter thread-cache assoc (:id thread) {:time (Instant/now)
                                                         :data thread})))
@@ -123,7 +124,6 @@
         watcher (add-watch stories-to-fetch :thread-detail-fetcher
                            (fn [key r old new]
                              (when-not (empty? new)
-                               (println "watched new " (count new))
                                (go
                                  (dosync (alter stories-to-fetch difference new))
                                  (>! watch-chan new)))))
@@ -145,7 +145,7 @@
                        (alts! [stop-chan watch-chan] :default #{})
                        (alts! [stop-chan watch-chan]))]
         (if (= ch stop-chan)
-          (print "stopping detail fetcher")
+          (log "stopping detail fetcher")
           (let [all (into (empty queue-t) (union to-fetch ids))
                 batch (take background-fetcher-max-concurrency all)
                 next-level (->> batch
@@ -155,9 +155,9 @@
                                 (async/into [])
                                 (<!)
                                 (transduce-fetched))]
-            (println "recurring with to-fetch " (count to-fetch) " after batch " (count batch)
-                     "with type " (type to-fetch)
-                     "and depth of batch " (map :depth batch))
+            (log "recurring with to-fetch " (count to-fetch) " after batch " (count batch)
+                 "with type " (type to-fetch)
+                 "and depth of batch " (map :depth batch))
             (recur (into (empty queue-t) (difference (union all next-level)
                                                      (into queue-t batch))))))))
     (fn []
