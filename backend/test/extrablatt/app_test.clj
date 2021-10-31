@@ -4,7 +4,7 @@
             [extrablatt.app :refer :all]
             [cheshire.core :refer [parse-string]]))
 
-(deftest test-app
+#_(deftest test-app
   (testing "init route"
     (let [req (mock/request :get "/")
           response (app req)
