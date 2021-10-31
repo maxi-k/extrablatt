@@ -1,13 +1,15 @@
 (ns extrablatt.hn
   (:require
+   [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [<! >! go <!! timeout alts! go-loop close!]]
    [clojure.set :refer [rename-keys union difference]]
-   [matchbox.core :as m])
+   [matchbox.core :as m]
+   [extrablatt.image :as img])
   (:import java.time.Instant))
 
 (def logging
   "Whether `log` should log the given messages"
-  (atom true))
+  (atom false))
 
 (defn- log
   "Log the given items to std out if logging is enabled"
@@ -31,8 +33,7 @@
   "Converts a hackernews api item to our application-internal format for top stories."
   [item]
   (-> item
-      (rename-keys {:by :author, :kids :comments})
-      (assoc :previewImage "https://cataas.com/cat")))
+      (rename-keys {:by :author, :kids :comments})))
 
 (def fb-root
   "Firebase root context for the hackernews firebase api."
@@ -49,6 +50,11 @@
 (def stories-to-fetch
   "Set of thread ids that should be fetched in the background."
   (ref #{}))
+
+;; TODO hacky global state to glue component systems together
+(def active-image-fetcher
+  "Image fetcher instance used"
+  (atom nil))
 
 (defn is-fresh?
   "Returns true if the given cache item is still fresh enough"
@@ -93,16 +99,21 @@
          (go
            (let [[key raw-thread] (<! ch)
                  thread (convert-hn-item raw-thread)]
-             (dosync
-              (alter thread-cache assoc (:id thread) {:time (Instant/now)
-                                                    :data thread}))
+             (when thread
+               (when (:url thread)
+                 (img/find-image-async @active-image-fetcher
+                                       (:id thread)
+                                       (:url thread)))
+               (dosync
+                (alter thread-cache assoc (:id thread) {:time (Instant/now)
+                                                        :data thread})))
              (close! ch)
              (closer)
-             (>! output thread)
+             (>! output (or thread :not-found))
              (close! output)))
          output)))))
 
-(def background-fetcher-max-concurrency 64)
+(def background-fetcher-max-concurrency 32)
 (defn- setup-thread-detail-fetcher
   "Fetches thread details in the background by watching
   the stories-to-fetch ref. Can be stopped by calling it as a function."
@@ -118,18 +129,24 @@
                                  (>! watch-chan new)))))
         transduce-fetched (fn [arg]
                             (transduce (comp
+                                        (filter #(not= :not-found (:thread %)))
                                         (filter #(< 0 (:depth %)))
                                         (map #(update % :depth dec))
                                         (mapcat (fn [{:keys [depth thread]}]
                                                   (map (fn [c] {:depth depth :id c})
                                                        (:comments thread)))))
-                                       conj #{} arg))]
-    (go-loop [to-fetch #{}]
+                                       conj #{} arg))
+        queue-t (sorted-set-by (fn [v1 v2]
+                                 (-
+                                  (compare [(:depth v1) (:id v1)]
+                                           [(:depth v2) (:id v2)]))))]
+    (go-loop [to-fetch queue-t]
       (let [[ids ch] (if (not (empty? to-fetch))
-                       [(async/poll! watch-chan) nil]
+                       (alts! [stop-chan watch-chan] :default #{})
                        (alts! [stop-chan watch-chan]))]
-        (when-not (= ch stop-chan)
-          (let [all (union to-fetch ids)
+        (if (= ch stop-chan)
+          (log "stopping detail fetcher")
+          (let [all (into (empty queue-t) (union to-fetch ids))
                 batch (take background-fetcher-max-concurrency all)
                 next-level (->> batch
                                 (map (fn [{:keys [id depth]}]
@@ -138,9 +155,14 @@
                                 (async/into [])
                                 (<!)
                                 (transduce-fetched))]
-            (recur (difference (union all next-level)
-                               (into #{} batch)))))))
-    (fn [] (async/>!! stop-chan))))
+            (log "recurring with to-fetch " (count to-fetch) " after batch " (count batch)
+                 "with type " (type to-fetch)
+                 "and depth of batch " (map :depth batch))
+            (recur (into (empty queue-t) (difference (union all next-level)
+                                                     (into queue-t batch))))))))
+    (fn []
+      (go (>! stop-chan ::stop))
+      (remove-watch stories-to-fetch :thread-detail-fetcher))))
 
 (defn fetch-thread-details-async
   "Asynchronously fetch the thread details of the given items
@@ -166,26 +188,47 @@
    fb-root :topstories
    (fn [stories]
      (when (not @ignore-top-stories)
-       (dosync
-        (ref-set top-stories stories))
-       (fetch-thread-details-async default-thread-depth stories)
-       (log "Got front page update - currently in cache: " (count @thread-cache) " and to fetch " (count @stories-to-fetch))))))
+       (let [story-set (into #{} stories)
+             sorted (sort (comp - compare) stories)
+             old-stories (dosync
+                          (let [old @top-stories]
+                            (ref-set top-stories sorted)
+                            old))
+             new-stories (difference story-set old-stories)]
+         (fetch-thread-details-async default-thread-depth new-stories)
+         (log "Got front page update - currently in cache: " (count @thread-cache) " and to fetch " (count @stories-to-fetch)
+              "with new frontend stories " (count new-stories) " (given " (count story-set) ")"))))))
 
+(defn- assoc-cached-image
+  "Try to associate the cached image with the given thread."
+  [thread]
+  (let [cache (:cache @active-image-fetcher)
+        saved (@cache (:id thread))]
+    (if (and saved (not= :not-found saved))
+      (assoc thread :previewImage saved)
+      thread)))
+
+(def front-page-timeout 2000)
 (defn front-page
   "Return the front page, loading missing entries if necessary."
   ([] (front-page default-front-page-count))
   ([n]
    (let [ids (take n @top-stories)
          len (count ids)
-         chs (async/merge (map (fn [id] (fetch-and-cache-thread id)) ids))]
-     (filter some?
-             (<!!
-              (go-loop [left len
-                        res []]
-                (if (= 0 left)
-                  res
-                  (recur (- left 1)
-                         (conj res (dissoc (<! chs) :comments))))))))))
+         chs (async/merge (map (fn [id] (fetch-and-cache-thread id)) ids))
+         timeout (async/timeout front-page-timeout)]
+     (sort (fn [t1 t2] (- (compare (:id t1) (:id t2))))
+      (filter some?
+              (<!!
+               (go-loop [left len
+                         res []]
+                 (if (= 0 left)
+                   res
+                   (let [[val ch] (alts! [timeout chs])]
+                     (if (= ch timeout)
+                       res
+                       (recur (- left 1)
+                              (conj res (assoc-cached-image (dissoc val :comments))))))))))))))
 
 (defn- collect-thread-detail-recur
   "Recursively get the children of the given thread,
@@ -217,12 +260,29 @@
        (fetch-thread-details-async depth ids))
      thread)))
 
-(def ^:private hn-processes
-  (atom {}))
+(defrecord HackernewsFetcher [image-fetcher]
+    component/Lifecycle
+    ;; TODO also put global state (caches etc) into components
+    (start [self]
+      (reset! active-image-fetcher image-fetcher)
+      (-> self
+          (assoc :detail-fetcher (setup-thread-detail-fetcher))
+          (assoc :story-fetcher (setup-top-thread-fetcher))))
 
-(defn hn-setup
-  []
-  (when (empty? @hn-processes)
-    (reset! hn-processes
-            {:detail-fetcher (setup-thread-detail-fetcher)
-             :story-fetcher (setup-top-thread-fetcher)})))
+    (stop [{:as self :keys [detail-fetcher story-fetcher]}]
+      (story-fetcher)
+      (detail-fetcher)
+      (reset! active-image-fetcher nil)
+      (print "resetting global state")
+      (dosync
+       (ref-set top-stories #{})
+       (ref-set thread-cache {})
+       (ref-set stories-to-fetch #{}))
+      (dissoc self :story-fetcher :detail-fetcher)))
+
+(defn new-hackernews []
+  (component/system-map
+   :image-fetcher (img/new-image-fetcher)
+   :hackernews-fetcher (component/using
+                        (map->HackernewsFetcher {})
+                        [:image-fetcher])))
