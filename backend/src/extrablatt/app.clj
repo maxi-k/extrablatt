@@ -20,7 +20,8 @@
    (GET "/" [count] (response (hn/front-page (parse-number-param count hn/default-front-page-count))))
    (GET ["/thread/:id" :id #"[0-9]+"] [id depth]
         (response (hn/thread-detail id
-                                    (parse-number-param depth hn/default-thread-depth))))))
+                                    (parse-number-param depth hn/default-thread-depth))))
+   (GET "/stats" [] (response (hn/get-stats)))))
 
 (defn- api-handler
   "Main definition for the webserver endpoints."
