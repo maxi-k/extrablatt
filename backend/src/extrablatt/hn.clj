@@ -41,7 +41,7 @@
 
 (def top-stories
   "The list of current top thread ids."
-  (ref #{}))
+  (ref []))
 
 (def thread-cache
   "Map from thread-id to {:fetched timestamp, :data thread-data}"
@@ -189,10 +189,12 @@
    (fn [stories]
      (when (not @ignore-top-stories)
        (let [story-set (into #{} stories)
-             new-stories (dosync
-                          (let [new (difference story-set @top-stories)]
-                            (ref-set top-stories story-set)
-                            new))]
+             sorted (sort (comp - compare) stories)
+             old-stories (dosync
+                          (let [old @top-stories]
+                            (ref-set top-stories sorted)
+                            old))
+             new-stories (difference story-set old-stories)]
          (fetch-thread-details-async default-thread-depth new-stories)
          (log "Got front page update - currently in cache: " (count @thread-cache) " and to fetch " (count @stories-to-fetch)
               "with new frontend stories " (count new-stories) " (given " (count story-set) ")"))))))
@@ -215,17 +217,18 @@
          len (count ids)
          chs (async/merge (map (fn [id] (fetch-and-cache-thread id)) ids))
          timeout (async/timeout front-page-timeout)]
-     (filter some?
-             (<!!
-              (go-loop [left len
-                        res []]
-                (if (= 0 left)
-                  res
-                  (let [[val ch] (alts! [timeout chs])]
-                    (if (= ch timeout)
-                      res
-                      (recur (- left 1)
-                             (conj res (assoc-cached-image (dissoc val :comments)))))))))))))
+     (sort (fn [t1 t2] (- (compare (:id t1) (:id t2))))
+      (filter some?
+              (<!!
+               (go-loop [left len
+                         res []]
+                 (if (= 0 left)
+                   res
+                   (let [[val ch] (alts! [timeout chs])]
+                     (if (= ch timeout)
+                       res
+                       (recur (- left 1)
+                              (conj res (assoc-cached-image (dissoc val :comments))))))))))))))
 
 (defn- collect-thread-detail-recur
   "Recursively get the children of the given thread,
