@@ -206,22 +206,26 @@
       (assoc thread :previewImage saved)
       thread)))
 
+(def front-page-timeout 2000)
 (defn front-page
   "Return the front page, loading missing entries if necessary."
   ([] (front-page default-front-page-count))
   ([n]
    (let [ids (take n @top-stories)
          len (count ids)
-         chs (async/merge (map (fn [id] (fetch-and-cache-thread id)) ids))]
-     (print n)
+         chs (async/merge (map (fn [id] (fetch-and-cache-thread id)) ids))
+         timeout (async/timeout front-page-timeout)]
      (filter some?
              (<!!
               (go-loop [left len
                         res []]
                 (if (= 0 left)
                   res
-                  (recur (- left 1)
-                         (conj res (assoc-cached-image (dissoc (<! chs) :comments)))))))))))
+                  (let [[val ch] (alts! [timeout chs])]
+                    (if (= ch timeout)
+                      res
+                      (recur (- left 1)
+                             (conj res (assoc-cached-image (dissoc val :comments)))))))))))))
 
 (defn- collect-thread-detail-recur
   "Recursively get the children of the given thread,
