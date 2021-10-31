@@ -41,7 +41,7 @@
 
 (def top-stories
   "The list of current top thread ids."
-  (ref []))
+  (ref #{}))
 
 (def thread-cache
   "Map from thread-id to {:fetched timestamp, :data thread-data}"
@@ -99,15 +99,16 @@
          (go
            (let [[key raw-thread] (<! ch)
                  thread (convert-hn-item raw-thread)]
-             (img/find-image-async @active-image-fetcher
-                                   (:id thread)
-                                   (:url thread))
-             (dosync
-              (alter thread-cache assoc (:id thread) {:time (Instant/now)
-                                                      :data thread}))
+             (when thread
+               (img/find-image-async @active-image-fetcher
+                                     (:id thread)
+                                     (:url thread))
+               (dosync
+                (alter thread-cache assoc (:id thread) {:time (Instant/now)
+                                                        :data thread})))
              (close! ch)
              (closer)
-             (>! output thread)
+             (>! output (or thread :not-found))
              (close! output)))
          output)))))
 
@@ -122,23 +123,30 @@
         watcher (add-watch stories-to-fetch :thread-detail-fetcher
                            (fn [key r old new]
                              (when-not (empty? new)
+                               (println "watched new " (count new))
                                (go
                                  (dosync (alter stories-to-fetch difference new))
                                  (>! watch-chan new)))))
         transduce-fetched (fn [arg]
                             (transduce (comp
+                                        (filter #(not= :not-found (:thread %)))
                                         (filter #(< 0 (:depth %)))
                                         (map #(update % :depth dec))
                                         (mapcat (fn [{:keys [depth thread]}]
                                                   (map (fn [c] {:depth depth :id c})
                                                        (:comments thread)))))
-                                       conj #{} arg))]
-    (go-loop [to-fetch #{}]
+                                       conj #{} arg))
+        queue-t (sorted-set-by (fn [v1 v2]
+                                 (-
+                                  (compare [(:depth v1) (:id v1)]
+                                           [(:depth v2) (:id v2)]))))]
+    (go-loop [to-fetch queue-t]
       (let [[ids ch] (if (not (empty? to-fetch))
-                       (alts! [stop-chan watch-chan] :default nil)
+                       (alts! [stop-chan watch-chan] :default #{})
                        (alts! [stop-chan watch-chan]))]
-        (when-not (= ch stop-chan)
-          (let [all (union to-fetch ids)
+        (if (= ch stop-chan)
+          (print "stopping detail fetcher")
+          (let [all (into (empty queue-t) (union to-fetch ids))
                 batch (take background-fetcher-max-concurrency all)
                 next-level (->> batch
                                 (map (fn [{:keys [id depth]}]
@@ -147,11 +155,14 @@
                                 (async/into [])
                                 (<!)
                                 (transduce-fetched))]
-            (recur (difference (union all next-level)
-                               (into #{} batch)))))))
+            (println "recurring with to-fetch " (count to-fetch) " after batch " (count batch)
+                     "with type " (type to-fetch)
+                     "and depth of batch " (map :depth batch))
+            (recur (into (empty queue-t) (difference (union all next-level)
+                                                     (into queue-t batch))))))))
     (fn []
-      (remove-watch stories-to-fetch :thread-detail-fetcher)
-      (async/>!! stop-chan ::stop))))
+      (go (>! stop-chan ::stop))
+      (remove-watch stories-to-fetch :thread-detail-fetcher))))
 
 (defn fetch-thread-details-async
   "Asynchronously fetch the thread details of the given items
@@ -177,10 +188,14 @@
    fb-root :topstories
    (fn [stories]
      (when (not @ignore-top-stories)
-       (dosync
-        (ref-set top-stories stories))
-       (fetch-thread-details-async default-thread-depth stories)
-       (log "Got front page update - currently in cache: " (count @thread-cache) " and to fetch " (count @stories-to-fetch))))))
+       (let [story-set (into #{} stories)
+             new-stories (dosync
+                          (let [new (difference story-set @top-stories)]
+                            (ref-set top-stories story-set)
+                            new))]
+         (fetch-thread-details-async default-thread-depth new-stories)
+         (log "Got front page update - currently in cache: " (count @thread-cache) " and to fetch " (count @stories-to-fetch)
+              "with new frontend stories " (count new-stories) " (given " (count story-set) ")"))))))
 
 (defn- assoc-cached-image
   "Try to associate the cached image with the given thread."
@@ -253,7 +268,7 @@
       (reset! active-image-fetcher nil)
       (print "resetting global state")
       (dosync
-       (ref-set top-stories [])
+       (ref-set top-stories #{})
        (ref-set thread-cache {})
        (ref-set stories-to-fetch #{}))
       (dissoc self :story-fetcher :detail-fetcher)))
