@@ -8,11 +8,16 @@
   component/Lifecycle
   (start [self]
     (let [processors (max 8 (.availableProcessors (java.lang.Runtime/getRuntime)))
-          port (Integer/valueOf (or (System/getenv "port") "8080"))]
+          port (Integer/valueOf (or (System/getenv "port") "8080"))
+          apache-logging (or (System/getenv "apache-logging") "org.apache.commons.logging.impl.NoOpLog")]
       (java.lang.System/setProperty "clojure.core.async.pool-size"
                                     (str processors))
-      (assoc self :async-pool-size processors :port port)))
-  (stop [self]))
+      (java.lang.System/setProperty "org.apache.commons.logging.Log" apache-logging)
+      (assoc self
+             :async-pool-size processors
+             :port port
+             :apache-logging apache-logging)))
+  (stop [self] self))
 
 (defn new-environment
   []
@@ -25,7 +30,8 @@
     (assoc self :server (run-jetty (:api app) {:port (:port environment)
                                                :join? (:block? config)})))
   (stop [{:as self :keys [server]}]
-    (.stop server)))
+    (.stop server)
+    (dissoc self :server)))
 
 (defn new-server [block?]
   (map->ServerComponent {:block? block?}))
