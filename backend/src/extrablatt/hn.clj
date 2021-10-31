@@ -47,6 +47,15 @@
   "Set of thread ids that should be fetched in the background."
   (ref #{}))
 
+(def ^:private default-stats {:to-fetch 0
+                              :in-cache 0
+                              :images-crawled 0
+                              :images-found 0
+                              :last-startpage-update 0})
+(def stats
+  "Statistics on the cache performance."
+  (ref default-stats))
+
 (def fb-root
   "Firebase root context for the hackernews firebase api."
   (atom nil))
@@ -113,6 +122,20 @@
              (close! output)))
          output)))))
 
+(defn- update-cache-stats
+  "Update the cache stats."
+  [to-fetch]
+  (let [img-cache @(:cache @active-image-fetcher)
+        cached (count @thread-cache)
+        img-crawled (count img-cache)
+        img-found (count (filter #(not= :not-found %) img-cache))]
+            (dosync
+             (alter stats assoc
+                    :to-fetch to-fetch
+                    :in-cache cached
+                    :images-crawled img-crawled
+                    :images-found img-found))))
+
 (def background-fetcher-max-concurrency 32)
 (defn- setup-thread-detail-fetcher
   "Fetches thread details in the background by watching
@@ -155,6 +178,7 @@
                                 (async/into [])
                                 (<!)
                                 (transduce-fetched))]
+            (update-cache-stats (- (count to-fetch) (count batch)))
             (log "recurring with to-fetch " (count to-fetch) " after batch " (count batch)
                  "with type " (type to-fetch)
                  "and depth of batch " (map :depth batch))
@@ -196,6 +220,7 @@
                             old))
              new-stories (difference story-set old-stories)]
          (fetch-thread-details-async default-thread-depth new-stories)
+         (dosync (alter stats assoc :last-startpage-update (.getEpochSecond (Instant/now))))
          (log "Got front page update - currently in cache: " (count @thread-cache) " and to fetch " (count @stories-to-fetch)
               "with new frontend stories " (count new-stories) " (given " (count story-set) ")"))))))
 
@@ -260,6 +285,15 @@
        (fetch-thread-details-async depth ids))
      thread)))
 
+(defn get-stats
+  "Get the stats map for the frontend."
+  []
+  (rename-keys @stats {:to-fetch :itemsToFetch
+                       :in-cache :itemsCached
+                       :images-crawled :imagesCrawled
+                       :images-found :imagesFound
+                       :last-startpage-update :lastStartpageUpdate}))
+
 (defrecord HackernewsFetcher [image-fetcher]
     component/Lifecycle
     ;; TODO also put global state (caches etc) into components
@@ -277,6 +311,7 @@
       (reset! fb-root nil)
       (print "resetting global state")
       (dosync
+       (ref-set stats default-stats)
        (ref-set top-stories #{})
        (ref-set thread-cache {})
        (ref-set stories-to-fetch #{}))
