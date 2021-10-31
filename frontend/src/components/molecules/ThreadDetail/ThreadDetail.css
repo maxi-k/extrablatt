@@ -23,9 +23,6 @@ a:hover {
 	display: block;
 }
 
-.thread__expandable__text {
-}
-
 .thread__header {
 	display: flex;
 	flex-direction: column;
@@ -39,6 +36,10 @@ a:hover {
 	font-size: 3rem;
 	text-align: center;
 	color:rgba(1, 1, 1, 1);
+}
+
+.thread__header__subtitle {
+	margin-bottom: 0;
 }
 
 .clickable {

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { StoryType } from "../../../types/storyType";
 import Loader from "../../atoms/Loader/Loader";
 import Story from "../../atoms/Story";
+import Stats from "../../atoms/Stats/Stats";
 import Header from "../../atoms/Header/Header";
+
 import "./Home.css";
 const Home = () => {
   const [stories, setStories] = useState<[StoryType]>();
@@ -36,7 +38,9 @@ const Home = () => {
       )}
       {loading && <Loader />}
       {error && <div>Error...</div>}
+      <Stats />
     </div>
+
   );
 };
 

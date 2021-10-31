@@ -26,8 +26,9 @@ const ThreadDetail = (props: ThreadDetailProps) => {
         <div className="thread__header__title clickable" onClick={onClick}>
           {thread.title}
         </div>
-        {thread.descendants} comments, posted by {thread.author}{" "}
-        {relativeTimeStamp(thread.time)}
+        <p className="thread__header__subtitle">
+          {thread.descendants} comments, posted by {thread.author}{" "}{relativeTimeStamp(thread.time)}
+        </p>
         <div className={`thread__comments`}>{recursiveThread(thread)}</div>
       </div>
     );

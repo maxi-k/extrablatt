@@ -1,0 +1,16 @@
+.stats {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: 10px;
+	line-height: 12px;
+	font-family: 'IBM Plex Sans', sans-serif;
+	padding: 1rem;
+	color: rgba(1,1,1,.5);
+}
+
+.stats p {
+	margin: 0;
+	padding: 0;
+}
