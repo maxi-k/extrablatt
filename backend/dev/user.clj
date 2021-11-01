@@ -7,6 +7,8 @@
             [clojure.tools.namespace.repl :as repl]
             [extrablatt.main :as main :refer [server-system]]))
 
+(repl/set-refresh-dirs "dev" "src")
+
 (defonce system nil)
 
 (defn init
