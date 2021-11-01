@@ -128,7 +128,7 @@
   (let [img-cache @(:cache @active-image-fetcher)
         cached (count @thread-cache)
         img-crawled (count img-cache)
-        img-found (count (filter #(not= :not-found %) img-cache))]
+        img-found (count (filter #(not= :not-found (% 1)) img-cache))]
             (dosync
              (alter stats assoc
                     :to-fetch to-fetch

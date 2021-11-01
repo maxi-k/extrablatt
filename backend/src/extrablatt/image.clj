@@ -29,21 +29,28 @@
   (.disableCookieManagement builder))
 
 (def meta-image-tags
-  "Meta tags that are used for assigning an image to an article/site."
-  #{"og:image" "twitter:image:src" "msapplication-TileImage"})
+  "Meta tags that are used for assigning an image to an article/site,
+  sorted by the priority they are to be given when trying to extract
+  an image from a page."
+  ["og:image"
+   "og:image:secure_url"
+   "twitter:image:src"
+   "twitter:image"
+   "msapplication-TileImage"])
 
 (defn- extract-meta-image
   "Tries to extract an image url from the documents meta tags."
   [doc]
-  (->> (html/select doc [:meta])
-       (map :attrs)
-       (filter (fn [attr-list]
-                 (or
-                  (contains? meta-image-tags (:name attr-list))
-                  (contains? meta-image-tags (:property attr-list)))))
-       (map :content)
-       (filter #(not (str/includes? % "blank.")))
-       (first)))
+  (let [attr-map (->> (html/select doc [:meta])
+                      (map :attrs)
+                      (map (fn [a] [(or (:name a) (:property a))
+                                    (:content a)]))
+                      (into {}))]
+    (->> meta-image-tags
+         (map attr-map)
+         (filter some?)
+         (filter #(not (str/includes? % "blank.")))
+         (first))))
 
 (defn- extract-img-tag-image
   "Tries to extract an image url from an image tag in the document."
@@ -85,7 +92,6 @@
     (when img-url
       (try
         (http/get img-url {:throw-exceptions true
-                           :accept "text/html"
                            :http-builder-fns [disable-cookie-management]})
         img-url
         (catch Exception e nil)))))
